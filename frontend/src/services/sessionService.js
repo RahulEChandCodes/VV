@@ -58,3 +58,22 @@ export const getCourseSessions = (courseId, params = {}) => {
 export const getActiveCourseSession = (courseId) => {
   return get(`/sessions/course/${courseId}/active`);
 };
+
+/**
+ * Get session by ID (alias for getSession to match student component usage)
+ */
+export const getSessionById = (sessionId) => {
+  return getSession(sessionId);
+};
+
+// Default export for convenience
+const sessionService = {
+  createSession,
+  getSession,
+  getSessionById,
+  endSession,
+  getCourseSessions,
+  getActiveCourseSession,
+};
+
+export default sessionService;

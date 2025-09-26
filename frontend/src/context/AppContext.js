@@ -7,6 +7,10 @@ const initialState = {
   userRole: null,
   currentSession: null,
   currentCourse: null,
+  
+  // Student specific state
+  studentName: "",
+  sessionJoined: false,
 
   // UI state
   loading: false,
@@ -34,6 +38,10 @@ export const ActionTypes = {
   SET_CURRENT_SESSION: "SET_CURRENT_SESSION",
   SET_CURRENT_COURSE: "SET_CURRENT_COURSE",
   CLEAR_SESSION: "CLEAR_SESSION",
+  
+  // Student actions
+  SET_STUDENT_NAME: "SET_STUDENT_NAME",
+  SET_SESSION_JOINED: "SET_SESSION_JOINED",
 
   // UI actions
   SET_LOADING: "SET_LOADING",
@@ -88,6 +96,20 @@ const appReducer = (state, action) => {
         questions: [],
         questionsByStudent: {},
         filters: initialState.filters,
+        sessionJoined: false,
+        studentName: "",
+      };
+
+    case ActionTypes.SET_STUDENT_NAME:
+      return {
+        ...state,
+        studentName: action.payload,
+      };
+
+    case ActionTypes.SET_SESSION_JOINED:
+      return {
+        ...state,
+        sessionJoined: action.payload,
       };
 
     case ActionTypes.SET_LOADING:
@@ -221,6 +243,19 @@ export const AppProvider = ({ children }) => {
       dispatch({ type: ActionTypes.CLEAR_SESSION });
       localStorage.removeItem("currentSession");
       localStorage.removeItem("currentCourse");
+      localStorage.removeItem("studentName");
+      localStorage.removeItem("sessionJoined");
+    },
+
+    // Student actions
+    setStudentName: (name) => {
+      dispatch({ type: ActionTypes.SET_STUDENT_NAME, payload: name });
+      localStorage.setItem("studentName", name);
+    },
+
+    setSessionJoined: (joined) => {
+      dispatch({ type: ActionTypes.SET_SESSION_JOINED, payload: joined });
+      localStorage.setItem("sessionJoined", joined.toString());
     },
 
     // UI actions
@@ -292,6 +327,8 @@ export const AppProvider = ({ children }) => {
       const savedUserRole = localStorage.getItem("userRole");
       const savedSession = localStorage.getItem("currentSession");
       const savedCourse = localStorage.getItem("currentCourse");
+      const savedStudentName = localStorage.getItem("studentName");
+      const savedSessionJoined = localStorage.getItem("sessionJoined");
 
       if (savedUserRole && Object.values(USER_ROLES).includes(savedUserRole)) {
         dispatch({ type: ActionTypes.SET_USER_ROLE, payload: savedUserRole });
@@ -309,6 +346,14 @@ export const AppProvider = ({ children }) => {
           type: ActionTypes.SET_CURRENT_COURSE,
           payload: JSON.parse(savedCourse),
         });
+      }
+
+      if (savedStudentName) {
+        dispatch({ type: ActionTypes.SET_STUDENT_NAME, payload: savedStudentName });
+      }
+
+      if (savedSessionJoined === "true") {
+        dispatch({ type: ActionTypes.SET_SESSION_JOINED, payload: true });
       }
     } catch (error) {
       console.error("Error loading persisted state:", error);

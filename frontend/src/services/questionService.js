@@ -104,3 +104,20 @@ export const toggleQuestionAnswered = (questionId) => {
 export const toggleQuestionImportant = (questionId) => {
   return updateQuestionStatus(questionId, { action: "toggle_important" });
 };
+
+// Default export for convenience
+const questionService = {
+  createQuestion: postQuestion, // Alias for compatibility
+  postQuestion,
+  getQuestionsBySession: getSessionQuestions, // Alias for compatibility
+  getSessionQuestions,
+  getSessionQuestionsByStudent,
+  updateQuestionStatus,
+  deleteQuestion,
+  markQuestionAnswered,
+  markQuestionImportant,
+  toggleQuestionAnswered,
+  toggleQuestionImportant,
+};
+
+export default questionService;

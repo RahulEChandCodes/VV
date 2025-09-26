@@ -1,14 +1,19 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AppProvider, useApp } from './context/AppContext';
-import { GlobalStyles } from './styles/GlobalStyles';
-import { ThemeProvider } from 'styled-components';
-import { theme } from './styles/theme';
-import ErrorBoundary from './components/common/ErrorBoundary';
-import Home from './pages/Home';
-import InstructorDashboard from './pages/InstructorDashboard';
-// import StudentInterface from './pages/StudentInterface'; // Will create this next
-import { USER_ROLES } from './utils/constants';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AppProvider, useApp } from "./context/AppContext";
+import { GlobalStyles } from "./styles/GlobalStyles";
+import { ThemeProvider } from "styled-components";
+import { theme } from "./styles/theme";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+import Home from "./pages/Home";
+import InstructorDashboard from "./pages/InstructorDashboard";
+import StudentInterface from "./pages/StudentInterface";
+import { USER_ROLES } from "./utils/constants";
 
 // Main App Content Component
 const AppContent = () => {
@@ -24,8 +29,8 @@ const AppContent = () => {
       <GlobalStyles />
       <ErrorBoundary>
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               userRole ? (
                 userRole === USER_ROLES.INSTRUCTOR ? (
@@ -36,32 +41,31 @@ const AppContent = () => {
               ) : (
                 <Home onRoleSelect={handleRoleSelect} />
               )
-            } 
+            }
           />
-          
-          <Route 
-            path="/instructor" 
+
+          <Route
+            path="/instructor"
             element={
               userRole === USER_ROLES.INSTRUCTOR ? (
                 <InstructorDashboard />
               ) : (
                 <Navigate to="/" replace />
               )
-            } 
+            }
           />
-          
-          <Route 
-            path="/student" 
+
+          <Route
+            path="/student"
             element={
               userRole === USER_ROLES.STUDENT ? (
-                <div>Student Interface - Coming Soon</div>
-                // <StudentInterface />
+                <StudentInterface />
               ) : (
                 <Navigate to="/" replace />
               )
-            } 
+            }
           />
-          
+
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
