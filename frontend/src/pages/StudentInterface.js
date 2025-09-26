@@ -212,7 +212,7 @@ const StudentInterface = () => {
         const response = await sessionService.getSessionById(
           currentSession.sessionId
         );
-        
+
         if (response.success) {
           const sessionData = response.data;
           setSessionStatus(sessionData.isActive ? "active" : "inactive");

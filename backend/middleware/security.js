@@ -26,7 +26,7 @@ const questionRateLimit = rateLimit({
  */
 const apiRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Maximum 100 requests per 15 minutes per IP
+  max: 500, // Increased to 500 requests per 15 minutes per IP (for development/testing)
   message: {
     success: false,
     message: "Too many requests from this IP. Please try again later.",

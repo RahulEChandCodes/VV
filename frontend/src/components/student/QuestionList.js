@@ -211,14 +211,22 @@ const QuestionList = () => {
 
     try {
       setError("");
-      const data = await questionService.getQuestionsBySession(
+      const response = await questionService.getQuestionsBySession(
         currentSession.sessionId
       );
-      setQuestions(data || []);
+      
+      // Handle API response wrapper
+      if (response.success) {
+        setQuestions(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setError(response.message || "Failed to load questions");
+        setQuestions([]);
+      }
       setLastUpdate(new Date());
     } catch (error) {
       console.error("Failed to load questions:", error);
-      setError(error.response?.data?.message || UI_MESSAGES.ERROR);
+      setError(error.message || UI_MESSAGES.ERROR);
+      setQuestions([]);
     } finally {
       setIsLoading(false);
     }
@@ -234,25 +242,26 @@ const QuestionList = () => {
     loadQuestions();
   }, [loadQuestions]);
 
-  // Auto-refresh every 10 seconds
+  // Auto-refresh every 30 seconds (reduced to avoid rate limiting)
   useEffect(() => {
     if (!currentSession?.sessionId) return;
 
     const interval = setInterval(() => {
       loadQuestions();
-    }, 10000); // 10 seconds
+    }, 30000); // 30 seconds to reduce API calls
 
     return () => clearInterval(interval);
   }, [loadQuestions, currentSession?.sessionId]);
 
-  // Calculate statistics
+  // Calculate statistics (ensure questions is always an array)
+  const questionsArray = Array.isArray(questions) ? questions : [];
   const stats = {
-    total: questions.length,
-    unanswered: questions.filter((q) => q.status === QUESTION_STATUS.UNANSWERED)
+    total: questionsArray.length,
+    unanswered: questionsArray.filter((q) => q.status === QUESTION_STATUS.UNANSWERED)
       .length,
-    answered: questions.filter((q) => q.status === QUESTION_STATUS.ANSWERED)
+    answered: questionsArray.filter((q) => q.status === QUESTION_STATUS.ANSWERED)
       .length,
-    important: questions.filter((q) => q.important).length,
+    important: questionsArray.filter((q) => q.important).length,
   };
 
   if (isLoading && questions.length === 0) {
@@ -331,14 +340,14 @@ const QuestionList = () => {
         </Controls>
       </Header>
 
-      {error && questions.length > 0 && (
+      {error && questionsArray.length > 0 && (
         <ErrorState style={{ marginBottom: "1rem" }}>
           <div>⚠️ {error}</div>
         </ErrorState>
       )}
 
       <QuestionsGrid>
-        {questions.length === 0 ? (
+        {questionsArray.length === 0 ? (
           <EmptyState>
             <EmptyIcon>💭</EmptyIcon>
             <EmptyTitle>No questions yet</EmptyTitle>
@@ -348,7 +357,7 @@ const QuestionList = () => {
             </EmptyDescription>
           </EmptyState>
         ) : (
-          questions
+          questionsArray
             .sort((a, b) => {
               // Sort by: important first, then by creation time (newest first)
               if (a.important && !b.important) return -1;

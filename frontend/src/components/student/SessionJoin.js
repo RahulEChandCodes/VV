@@ -204,12 +204,12 @@ const SessionJoin = () => {
     try {
       // Check if session exists and is active
       const response = await sessionService.getSessionById(sessionId);
-      
+
       if (!response.success) {
         setErrors({ sessionId: response.message || "Failed to fetch session" });
         return;
       }
-      
+
       const sessionData = response.data;
 
       if (!sessionData.isActive) {
