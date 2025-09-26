@@ -25,12 +25,12 @@ export const getSession = (sessionId) => {
 };
 
 /**
- * End a session
- * @param {string} sessionId - Session ID
+ * End/stop a session
+ * @param {string} sessionId - Session ID to end
  * @returns {Promise} - API response
  */
 export const endSession = (sessionId) => {
-  return put(`/sessions/${sessionId}/end`);
+  return put(`/sessions/${sessionId}/end`, {});
 };
 
 /**

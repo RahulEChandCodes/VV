@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Button } from '../../styles/GlobalStyles';
+import React, { Component } from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import { Button } from "../../styles/GlobalStyles";
 
 const ErrorContainer = styled.div`
   display: flex;
@@ -36,13 +36,13 @@ const ErrorDetails = styled.details`
   border-radius: ${theme.borderRadius.md};
   width: 100%;
   max-width: 600px;
-  
+
   summary {
     cursor: pointer;
     font-weight: ${theme.fontWeights.medium};
     margin-bottom: ${theme.spacing[2]};
   }
-  
+
   pre {
     background: ${theme.colors.surface};
     padding: ${theme.spacing[3]};
@@ -66,12 +66,12 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, errorInfo) {
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
 
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
     // In production, you might want to log this to an error reporting service
@@ -93,11 +93,16 @@ class ErrorBoundary extends Component {
           <ErrorIcon>😵</ErrorIcon>
           <ErrorTitle>Oops! Something went wrong</ErrorTitle>
           <ErrorMessage>
-            We're sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists.
+            We're sorry, but something unexpected happened. Please try
+            refreshing the page or contact support if the problem persists.
           </ErrorMessage>
-          
+
           <div>
-            <Button variant="primary" onClick={this.handleRetry} style={{ marginRight: theme.spacing[3] }}>
+            <Button
+              variant="primary"
+              onClick={this.handleRetry}
+              style={{ marginRight: theme.spacing[3] }}
+            >
               Try Again
             </Button>
             <Button variant="outline" onClick={this.handleReload}>
@@ -105,7 +110,7 @@ class ErrorBoundary extends Component {
             </Button>
           </div>
 
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+          {process.env.NODE_ENV === "development" && this.state.error && (
             <ErrorDetails>
               <summary>Error Details (Development)</summary>
               <pre>

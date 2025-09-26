@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
-import SessionJoin from '../components/student/SessionJoin';
-import QuestionForm from '../components/student/QuestionForm';
-import QuestionList from '../components/student/QuestionList';
-import Header from '../components/common/Header';
-import ErrorBoundary from '../components/common/ErrorBoundary';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useApp } from "../context/AppContext";
+import SessionJoin from "../components/student/SessionJoin";
+import QuestionForm from "../components/student/QuestionForm";
+import QuestionList from "../components/student/QuestionList";
+import Header from "../components/common/Header";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 // import LoadingSpinner from '../components/common/LoadingSpinner';
-import sessionService from '../services/sessionService';
-import { USER_ROLES } from '../utils/constants';
+import sessionService from "../services/sessionService";
+import { USER_ROLES } from "../utils/constants";
 
 const StudentContainer = styled.div`
   min-height: 100vh;
@@ -72,7 +72,7 @@ const InfoLabel = styled.span`
 
 const InfoValue = styled.span`
   color: ${({ theme }) => theme.colors.primary};
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 `;
 
 const SessionControls = styled.div`
@@ -109,10 +109,12 @@ const StatusIndicator = styled.div`
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
-  background: ${({ theme, status }) => 
-    status === 'active' ? theme.colors.success + '20' : theme.colors.warning + '20'};
-  color: ${({ theme, status }) => 
-    status === 'active' ? theme.colors.success : theme.colors.warning};
+  background: ${({ theme, status }) =>
+    status === "active"
+      ? theme.colors.success + "20"
+      : theme.colors.warning + "20"};
+  color: ${({ theme, status }) =>
+    status === "active" ? theme.colors.success : theme.colors.warning};
 `;
 
 const StatusDot = styled.div`
@@ -176,10 +178,28 @@ const FeatureDescription = styled.p`
   line-height: 1.5;
 `;
 
+const HomeButton = styled.button`
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryDark};
+    transform: translateY(-2px);
+  }
+`;
+
 const StudentInterface = () => {
   const { state, actions } = useApp();
   const { currentSession, sessionJoined, studentName, userRole } = state;
-  const [sessionStatus, setSessionStatus] = useState('active');
+  const [sessionStatus, setSessionStatus] = useState("active");
   const [isCheckingSession, setIsCheckingSession] = useState(false);
 
   // Check session status periodically
@@ -189,16 +209,24 @@ const StudentInterface = () => {
     const checkSessionStatus = async () => {
       try {
         setIsCheckingSession(true);
-        const sessionData = await sessionService.getSessionById(currentSession.sessionId);
-        setSessionStatus(sessionData.active ? 'active' : 'inactive');
+        const response = await sessionService.getSessionById(
+          currentSession.sessionId
+        );
         
-        // Update session data if needed
-        if (sessionData.active !== currentSession.active) {
-          actions.setCurrentSession(sessionData);
+        if (response.success) {
+          const sessionData = response.data;
+          setSessionStatus(sessionData.isActive ? "active" : "inactive");
+
+          // Update session data if needed
+          if (sessionData.isActive !== currentSession.isActive) {
+            actions.setCurrentSession(sessionData);
+          }
+        } else {
+          setSessionStatus("error");
         }
       } catch (error) {
-        console.error('Failed to check session status:', error);
-        setSessionStatus('error');
+        console.error("Failed to check session status:", error);
+        setSessionStatus("error");
       } finally {
         setIsCheckingSession(false);
       }
@@ -214,13 +242,13 @@ const StudentInterface = () => {
 
   const handleLeaveSession = () => {
     const confirmLeave = window.confirm(
-      'Are you sure you want to leave this session? You\'ll need to rejoin with the session ID.'
+      "Are you sure you want to leave this session? You'll need to rejoin with the session ID."
     );
-    
+
     if (confirmLeave) {
       actions.setCurrentSession(null);
       actions.setSessionJoined(false);
-      actions.setStudentName('');
+      actions.setStudentName("");
     }
   };
 
@@ -229,9 +257,12 @@ const StudentInterface = () => {
     return (
       <StudentContainer>
         <MainContent>
-          <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+          <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
             <h2>Access Denied</h2>
-            <p>Please select the Student role from the home page to access this interface.</p>
+            <p>
+              Please select the Student role from the home page to access this
+              interface.
+            </p>
           </div>
         </MainContent>
       </StudentContainer>
@@ -242,18 +273,21 @@ const StudentInterface = () => {
   if (!sessionJoined || !currentSession) {
     return (
       <StudentContainer>
-        <Header 
-          title="VidyaVichara - Student" 
+        <Header
+          title="VidyaVichara - Student"
           showBackButton={true}
           onBack={() => actions.setUserRole(null)}
         />
         <MainContent>
           <WelcomeSection>
+            <HomeButton onClick={() => actions.resetApp()}>
+              🏠 Back to Home
+            </HomeButton>
             <WelcomeTitle>Welcome, Student! 🎓</WelcomeTitle>
             <WelcomeDescription>
-              Join a live Q&A session and participate in interactive learning. 
-              Ask questions during lectures and see them displayed as colorful sticky notes 
-              on the instructor's board.
+              Join a live Q&A session and participate in interactive learning.
+              Ask questions during lectures and see them displayed as colorful
+              sticky notes on the instructor's board.
             </WelcomeDescription>
           </WelcomeSection>
 
@@ -262,7 +296,8 @@ const StudentInterface = () => {
               <FeatureIcon>🔗</FeatureIcon>
               <FeatureTitle>Join Sessions</FeatureTitle>
               <FeatureDescription>
-                Enter the session ID provided by your instructor to join live Q&A sessions
+                Enter the session ID provided by your instructor to join live
+                Q&A sessions
               </FeatureDescription>
             </FeatureCard>
 
@@ -270,7 +305,8 @@ const StudentInterface = () => {
               <FeatureIcon>❓</FeatureIcon>
               <FeatureTitle>Ask Questions</FeatureTitle>
               <FeatureDescription>
-                Post your questions during lectures and see them appear as sticky notes
+                Post your questions during lectures and see them appear as
+                sticky notes
               </FeatureDescription>
             </FeatureCard>
 
@@ -278,7 +314,8 @@ const StudentInterface = () => {
               <FeatureIcon>👥</FeatureIcon>
               <FeatureTitle>See All Questions</FeatureTitle>
               <FeatureDescription>
-                View questions from other students and see when they get answered by the instructor
+                View questions from other students and see when they get
+                answered by the instructor
               </FeatureDescription>
             </FeatureCard>
 
@@ -286,7 +323,8 @@ const StudentInterface = () => {
               <FeatureIcon>🔄</FeatureIcon>
               <FeatureTitle>Real-time Updates</FeatureTitle>
               <FeatureDescription>
-                Questions update automatically so you always see the latest discussion
+                Questions update automatically so you always see the latest
+                discussion
               </FeatureDescription>
             </FeatureCard>
           </FeatureList>
@@ -302,41 +340,44 @@ const StudentInterface = () => {
   // Show main student interface when joined to a session
   return (
     <StudentContainer>
-      <Header 
-        title="VidyaVichara - Student" 
+      <Header
+        title="VidyaVichara - Student"
         showBackButton={true}
-        onBack={() => actions.setUserRole(null)}
-      />
-      
+        onBack={() => actions.resetApp()}
+      />{" "}
       <MainContent>
         <SessionHeader>
           <SessionTitle>
-            📝 {currentSession.course?.title || 'Q&A Session'}
+            📝 {currentSession.course?.title || "Q&A Session"}
           </SessionTitle>
-          
+
           <SessionInfo>
             <InfoItem>
               <InfoLabel>Session:</InfoLabel>
               <InfoValue>{currentSession.sessionId}</InfoValue>
             </InfoItem>
-            
+
             <InfoItem>
               <InfoLabel>Student:</InfoLabel>
               <InfoValue>{studentName}</InfoValue>
             </InfoItem>
-            
+
             {currentSession.course && (
               <InfoItem>
                 <InfoLabel>Course:</InfoLabel>
                 <InfoValue>{currentSession.course.code}</InfoValue>
               </InfoItem>
             )}
-            
+
             <StatusIndicator status={sessionStatus}>
               <StatusDot />
-              {isCheckingSession ? 'Checking...' : 
-               sessionStatus === 'active' ? 'Active' : 
-               sessionStatus === 'inactive' ? 'Inactive' : 'Error'}
+              {isCheckingSession
+                ? "Checking..."
+                : sessionStatus === "active"
+                ? "Active"
+                : sessionStatus === "inactive"
+                ? "Inactive"
+                : "Error"}
             </StatusIndicator>
           </SessionInfo>
 
@@ -347,22 +388,25 @@ const StudentInterface = () => {
           </SessionControls>
         </SessionHeader>
 
-        {sessionStatus === 'inactive' && (
-          <div style={{
-            background: '#fff3cd',
-            color: '#856404',
-            padding: '1rem',
-            borderRadius: '8px',
-            marginBottom: '2rem',
-            textAlign: 'center',
-            border: '1px solid #ffeaa7'
-          }}>
-            ⚠️ This session is currently inactive. You can view existing questions but cannot post new ones.
+        {sessionStatus === "inactive" && (
+          <div
+            style={{
+              background: "#fff3cd",
+              color: "#856404",
+              padding: "1rem",
+              borderRadius: "8px",
+              marginBottom: "2rem",
+              textAlign: "center",
+              border: "1px solid #ffeaa7",
+            }}
+          >
+            ⚠️ This session is currently inactive. You can view existing
+            questions but cannot post new ones.
           </div>
         )}
 
         <ErrorBoundary>
-          {sessionStatus === 'active' && <QuestionForm />}
+          {sessionStatus === "active" && <QuestionForm />}
         </ErrorBoundary>
 
         <ErrorBoundary>

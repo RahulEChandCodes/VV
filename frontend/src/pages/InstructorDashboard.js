@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { theme } from '../styles/theme';
-import { Container } from '../styles/GlobalStyles';
-import { useApp } from '../context/AppContext';
-import Header from '../components/common/Header';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import CourseSelector from '../components/instructor/CourseSelector';
-import SessionManager from '../components/instructor/SessionManager';
-import QuestionFilters from '../components/instructor/QuestionFilters';
-import StudentGrid from '../components/instructor/StudentGrid';
-import { getSessionQuestionsByStudent } from '../services/questionService';
-import { updateQuestionStatus } from '../services/questionService';
-import { copyToClipboard } from '../utils/helpers';
-import { POLLING_INTERVAL } from '../utils/constants';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { theme } from "../styles/theme";
+import { Container } from "../styles/GlobalStyles";
+import { useApp } from "../context/AppContext";
+import Header from "../components/common/Header";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import CourseSelector from "../components/instructor/CourseSelector";
+import SessionManager from "../components/instructor/SessionManager";
+import QuestionFilters from "../components/instructor/QuestionFilters";
+import StudentGrid from "../components/instructor/StudentGrid";
+import { getSessionQuestionsByStudent } from "../services/questionService";
+import { updateQuestionStatus } from "../services/questionService";
+import { copyToClipboard } from "../utils/helpers";
+import { POLLING_INTERVAL } from "../utils/constants";
 
 const DashboardContainer = styled.div`
   min-height: 100vh;
@@ -50,8 +50,8 @@ const Step = styled.div`
   padding: ${theme.spacing[2]} ${theme.spacing[4]};
   border-radius: ${theme.borderRadius.md};
   font-weight: ${theme.fontWeights.medium};
-  
-  ${props => {
+
+  ${(props) => {
     if (props.completed) {
       return `
         background: ${theme.colors.success}20;
@@ -69,7 +69,7 @@ const Step = styled.div`
       `;
     }
   }}
-  
+
   .step-number {
     width: 24px;
     height: 24px;
@@ -87,13 +87,13 @@ const Step = styled.div`
 const InstructorDashboard = () => {
   const { state, actions } = useApp();
   const { currentCourse, currentSession, filters } = state;
-  
+
   const [questions, setQuestions] = useState([]);
   const [questionCounts, setQuestionCounts] = useState({
     total: 0,
     answered: 0,
     unanswered: 0,
-    important: 0
+    important: 0,
   });
   const [loading, setLoading] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(null);
@@ -114,13 +114,13 @@ const InstructorDashboard = () => {
 
   const startPolling = () => {
     stopPolling(); // Clear any existing interval
-    
+
     const interval = setInterval(() => {
       if (currentSession) {
         loadQuestions(false); // Load without showing loading spinner
       }
     }, POLLING_INTERVAL);
-    
+
     setPollingInterval(interval);
   };
 
@@ -135,42 +135,45 @@ const InstructorDashboard = () => {
     if (!currentSession) return;
 
     if (showLoading) setLoading(true);
-    
+
     try {
       const params = {};
-      if (filters.status !== 'all') params.status = filters.status;
+      if (filters.status !== "all") params.status = filters.status;
       if (filters.student) params.student = filters.student;
 
-      const response = await getSessionQuestionsByStudent(currentSession.sessionId, params);
-      
+      const response = await getSessionQuestionsByStudent(
+        currentSession.sessionId,
+        params
+      );
+
       if (response.success) {
         const questionsArray = [];
         const questionsByStudent = response.data.questionsByStudent || {};
-        
+
         // Flatten questions from grouped data
-        Object.values(questionsByStudent).forEach(studentQuestions => {
+        Object.values(questionsByStudent).forEach((studentQuestions) => {
           questionsArray.push(...studentQuestions);
         });
-        
+
         setQuestions(questionsArray);
-        
+
         // Calculate question counts
         const counts = {
           total: questionsArray.length,
-          answered: questionsArray.filter(q => q.isAnswered).length,
-          unanswered: questionsArray.filter(q => !q.isAnswered).length,
-          important: questionsArray.filter(q => q.isImportant).length
+          answered: questionsArray.filter((q) => q.isAnswered).length,
+          unanswered: questionsArray.filter((q) => !q.isAnswered).length,
+          important: questionsArray.filter((q) => q.isImportant).length,
         };
         setQuestionCounts(counts);
-        
+
         // Update global state
         actions.setQuestions(questionsArray);
         actions.setQuestionsByStudent(questionsByStudent);
       } else {
-        console.error('Failed to load questions:', response.message);
+        console.error("Failed to load questions:", response.message);
       }
     } catch (error) {
-      console.error('Error loading questions:', error);
+      console.error("Error loading questions:", error);
     } finally {
       if (showLoading) setLoading(false);
     }
@@ -192,39 +195,43 @@ const InstructorDashboard = () => {
   const handleCopySessionId = async (sessionId) => {
     const success = await copyToClipboard(sessionId);
     if (success) {
-      actions.setSuccess('Session ID copied to clipboard!');
+      actions.setSuccess("Session ID copied to clipboard!");
     } else {
-      actions.setError('Failed to copy session ID');
+      actions.setError("Failed to copy session ID");
     }
   };
 
   const handleQuestionStatusChange = async (questionId, action) => {
     try {
       const response = await updateQuestionStatus(questionId, { action });
-      
+
       if (response.success) {
         // Update the question in local state
-        setQuestions(prev => prev.map(q => 
-          q._id === questionId ? { ...q, ...response.data } : q
-        ));
-        
+        setQuestions((prev) =>
+          prev.map((q) =>
+            q._id === questionId ? { ...q, ...response.data } : q
+          )
+        );
+
         // Update global state
         actions.updateQuestion(response.data);
-        
+
         // Refresh counts
         loadQuestions(false);
       } else {
-        actions.setError(response.message || 'Failed to update question status');
+        actions.setError(
+          response.message || "Failed to update question status"
+        );
       }
     } catch (error) {
-      actions.setError('Failed to update question status');
-      console.error('Error updating question status:', error);
+      actions.setError("Failed to update question status");
+      console.error("Error updating question status:", error);
     }
   };
 
   const handleQuestionClick = (question) => {
     // Could open a modal with full question details
-    console.log('Question clicked:', question);
+    console.log("Question clicked:", question);
   };
 
   // Determine current step for progress indicator
@@ -242,7 +249,7 @@ const InstructorDashboard = () => {
         userRole="instructor"
         currentSession={currentSession}
         currentCourse={currentCourse}
-        onRoleChange={actions.setUserRole}
+        onRoleChange={actions.resetApp}
         onSessionEnd={handleSessionEnd}
         onCopySessionId={handleCopySessionId}
       />
@@ -304,10 +311,10 @@ const InstructorDashboard = () => {
 
               <Section>
                 <SectionTitle>
-                  Student Questions 
+                  Student Questions
                   {questions.length > 0 && ` (${questions.length})`}
                 </SectionTitle>
-                
+
                 {loading ? (
                   <LoadingSpinner text="Loading questions..." />
                 ) : (

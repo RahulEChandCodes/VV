@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useApp } from '../../context/AppContext';
-import questionService from '../../services/questionService';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { VALIDATION_RULES, UI_MESSAGES } from '../../utils/constants';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useApp } from "../../context/AppContext";
+import questionService from "../../services/questionService";
+import LoadingSpinner from "../common/LoadingSpinner";
+import { VALIDATION_RULES, UI_MESSAGES } from "../../utils/constants";
 
 const QuestionFormContainer = styled.div`
   background: ${({ theme }) => theme.colors.surface};
@@ -42,8 +42,9 @@ const TextArea = styled.textarea`
   width: 100%;
   min-height: 120px;
   padding: 1rem;
-  border: 2px solid ${({ theme, hasError }) => 
-    hasError ? theme.colors.danger : theme.colors.border};
+  border: 2px solid
+    ${({ theme, hasError }) =>
+      hasError ? theme.colors.danger : theme.colors.border};
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
@@ -66,7 +67,7 @@ const TextArea = styled.textarea`
 
 const CharacterCount = styled.div`
   font-size: 0.875rem;
-  color: ${({ theme, isNearLimit }) => 
+  color: ${({ theme, isNearLimit }) =>
     isNearLimit ? theme.colors.warning : theme.colors.textSecondary};
   text-align: right;
   margin-top: -0.5rem;
@@ -161,10 +162,10 @@ const StudentName = styled.span`
 const QuestionForm = () => {
   const { state, actions } = useApp();
   const { currentSession, studentName } = state;
-  const [questionText, setQuestionText] = useState('');
+  const [questionText, setQuestionText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const maxLength = VALIDATION_RULES.QUESTION.MAX_LENGTH;
   const minLength = VALIDATION_RULES.QUESTION.MIN_LENGTH;
@@ -174,75 +175,74 @@ const QuestionForm = () => {
     const value = e.target.value;
     if (value.length <= maxLength) {
       setQuestionText(value);
-      
+
       // Clear error when user starts typing valid content
       if (error && value.trim().length >= minLength) {
-        setError('');
+        setError("");
       }
-      
+
       // Clear success message when user starts typing again
-      if (successMessage && value.trim() !== '') {
-        setSuccessMessage('');
+      if (successMessage && value.trim() !== "") {
+        setSuccessMessage("");
       }
     }
   };
 
   const validateQuestion = () => {
     const trimmedText = questionText.trim();
-    
+
     if (!trimmedText) {
-      setError('Please enter your question');
+      setError("Please enter your question");
       return false;
     }
-    
+
     if (trimmedText.length < minLength) {
       setError(`Question must be at least ${minLength} characters long`);
       return false;
     }
-    
+
     if (trimmedText.length > maxLength) {
       setError(`Question must be no more than ${maxLength} characters long`);
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateQuestion()) {
       return;
     }
-    
+
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
       const questionData = {
         sessionId: currentSession.sessionId,
         studentName: studentName,
         text: questionText.trim(),
       };
-      
+
       await questionService.createQuestion(questionData);
-      
+
       // Success! Clear the form and show success message
-      setQuestionText('');
-      setSuccessMessage('Your question has been posted successfully! 🎉');
-      
+      setQuestionText("");
+      setSuccessMessage("Your question has been posted successfully! 🎉");
+
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(''), 3000);
-      
+      setTimeout(() => setSuccessMessage(""), 3000);
+
       // Refresh questions list if needed
       actions.refreshQuestions?.();
-      
     } catch (error) {
-      console.error('Failed to post question:', error);
+      console.error("Failed to post question:", error);
       setError(
-        error.response?.data?.message || 
-        UI_MESSAGES.ERROR || 
-        'Failed to post your question. Please try again.'
+        error.response?.data?.message ||
+          UI_MESSAGES.ERROR ||
+          "Failed to post your question. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -250,9 +250,9 @@ const QuestionForm = () => {
   };
 
   const handleClear = () => {
-    setQuestionText('');
-    setError('');
-    setSuccessMessage('');
+    setQuestionText("");
+    setError("");
+    setSuccessMessage("");
   };
 
   return (
@@ -261,9 +261,9 @@ const QuestionForm = () => {
         <QuestionIcon>❓</QuestionIcon>
         Ask a Question
       </FormTitle>
-      
+
       <StudentInfo>
-        Posting as: <StudentName>{studentName}</StudentName> in session{' '}
+        Posting as: <StudentName>{studentName}</StudentName> in session{" "}
         <StudentName>{currentSession?.sessionId}</StudentName>
       </StudentInfo>
 
@@ -275,7 +275,7 @@ const QuestionForm = () => {
           hasError={!!error}
           disabled={isLoading}
         />
-        
+
         <CharacterCount isNearLimit={isNearLimit}>
           {questionText.length} / {maxLength} characters
         </CharacterCount>
@@ -284,24 +284,25 @@ const QuestionForm = () => {
         {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
 
         <ButtonGroup>
-          <ClearButton 
-            type="button" 
+          <ClearButton
+            type="button"
             onClick={handleClear}
             disabled={isLoading || !questionText.trim()}
           >
             Clear
           </ClearButton>
-          
-          <SubmitButton type="submit" disabled={isLoading || !questionText.trim()}>
+
+          <SubmitButton
+            type="submit"
+            disabled={isLoading || !questionText.trim()}
+          >
             {isLoading ? (
               <>
                 <LoadingSpinner size="small" color="white" />
                 Posting...
               </>
             ) : (
-              <>
-                Post Question
-              </>
+              <>Post Question</>
             )}
           </SubmitButton>
         </ButtonGroup>

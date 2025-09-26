@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Container, Flex } from '../../styles/GlobalStyles';
+import React from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import { Container, Flex } from "../../styles/GlobalStyles";
 
 const HeaderContainer = styled.header`
   background: ${theme.colors.surface};
@@ -14,11 +14,11 @@ const HeaderContainer = styled.header`
 
 const Logo = styled.h1`
   font-family: ${theme.fonts.heading};
-  font-size: ${theme.fontSizes['2xl']};
+  font-size: ${theme.fontSizes["2xl"]};
   font-weight: ${theme.fontWeights.bold};
   color: ${theme.colors.primary};
   margin: 0;
-  
+
   span {
     color: ${theme.colors.secondary};
   }
@@ -40,13 +40,15 @@ const NavLink = styled.button`
   border-radius: ${theme.borderRadius.md};
   cursor: pointer;
   transition: all ${theme.transitions.fast};
-  
+
   &:hover {
     background: ${theme.colors.background};
     color: ${theme.colors.primary};
   }
-  
-  ${props => props.active && `
+
+  ${(props) =>
+    props.active &&
+    `
     background: ${theme.colors.primary};
     color: white;
     
@@ -58,7 +60,10 @@ const NavLink = styled.button`
 `;
 
 const RoleIndicator = styled.div`
-  background: ${props => props.role === 'instructor' ? theme.colors.primary : theme.colors.secondary};
+  background: ${(props) =>
+    props.role === "instructor"
+      ? theme.colors.primary
+      : theme.colors.secondary};
   color: white;
   padding: ${theme.spacing[2]} ${theme.spacing[4]};
   border-radius: ${theme.borderRadius.full};
@@ -84,19 +89,19 @@ const SessionId = styled.span`
   color: ${theme.colors.text};
   cursor: pointer;
   transition: all ${theme.transitions.fast};
-  
+
   &:hover {
     background: ${theme.colors.primary}20;
   }
 `;
 
-const Header = ({ 
-  userRole, 
-  currentSession, 
+const Header = ({
+  userRole,
+  currentSession,
   currentCourse,
   onRoleChange,
   onSessionEnd,
-  onCopySessionId 
+  onCopySessionId,
 }) => {
   const handleCopySessionId = () => {
     if (currentSession && onCopySessionId) {
@@ -111,36 +116,30 @@ const Header = ({
           <Logo>
             Vidya<span>Vichara</span>
           </Logo>
-          
+
           <Flex align="center" gap={4}>
             {currentSession && (
               <SessionInfo>
                 <span>Session:</span>
-                <SessionId 
+                <SessionId
                   onClick={handleCopySessionId}
                   title="Click to copy session ID"
                 >
                   {currentSession.sessionId}
                 </SessionId>
-                {currentCourse && (
-                  <span>| {currentCourse.title}</span>
-                )}
+                {currentCourse && <span>| {currentCourse.title}</span>}
               </SessionInfo>
             )}
-            
+
             <Navigation>
               {userRole && (
                 <>
-                  <RoleIndicator role={userRole}>
-                    {userRole}
-                  </RoleIndicator>
-                  
-                  {currentSession && userRole === 'instructor' && (
-                    <NavLink onClick={onSessionEnd}>
-                      End Session
-                    </NavLink>
+                  <RoleIndicator role={userRole}>{userRole}</RoleIndicator>
+
+                  {currentSession && userRole === "instructor" && (
+                    <NavLink onClick={onSessionEnd}>End Session</NavLink>
                   )}
-                  
+
                   <NavLink onClick={() => onRoleChange(null)}>
                     Switch Role
                   </NavLink>

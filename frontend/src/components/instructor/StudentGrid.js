@@ -1,15 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Card } from '../../styles/GlobalStyles';
-import StickyNote from '../common/StickyNote';
-import { groupBy, getInitials } from '../../utils/helpers';
+import React, { useState, useMemo } from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import { Card } from "../../styles/GlobalStyles";
+import StickyNote from "../common/StickyNote";
+import { groupBy, getInitials } from "../../utils/helpers";
 
 const GridContainer = styled.div`
   display: grid;
   gap: ${theme.spacing[4]};
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  
+
   @media (max-width: ${theme.breakpoints.md}) {
     grid-template-columns: 1fr;
   }
@@ -19,7 +19,7 @@ const StudentCard = styled(Card)`
   padding: 0;
   overflow: hidden;
   transition: all ${theme.transitions.normal};
-  
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -66,13 +66,18 @@ const QuestionStats = styled.div`
 `;
 
 const StatBadge = styled.span`
-  background: ${props => {
+  background: ${(props) => {
     switch (props.type) {
-      case 'total': return theme.colors.primary;
-      case 'unanswered': return theme.colors.warning;
-      case 'answered': return theme.colors.success;
-      case 'important': return theme.colors.danger;
-      default: return theme.colors.muted;
+      case "total":
+        return theme.colors.primary;
+      case "unanswered":
+        return theme.colors.warning;
+      case "answered":
+        return theme.colors.success;
+      case "important":
+        return theme.colors.danger;
+      default:
+        return theme.colors.muted;
     }
   }};
   color: white;
@@ -85,20 +90,20 @@ const QuestionsContainer = styled.div`
   padding: ${theme.spacing[2]};
   max-height: 400px;
   overflow-y: auto;
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: ${theme.colors.background};
     border-radius: 3px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: ${theme.colors.muted};
     border-radius: 3px;
-    
+
     &:hover {
       background: ${theme.colors.primary};
     }
@@ -109,12 +114,12 @@ const EmptyState = styled.div`
   padding: ${theme.spacing[6]};
   text-align: center;
   color: ${theme.colors.muted};
-  
+
   .icon {
     font-size: 3rem;
     margin-bottom: ${theme.spacing[2]};
   }
-  
+
   h3 {
     margin-bottom: ${theme.spacing[2]};
     color: ${theme.colors.text};
@@ -128,12 +133,12 @@ const NoQuestionsMessage = styled.div`
   font-style: italic;
 `;
 
-const StudentGrid = ({ 
-  questions = [], 
-  onQuestionStatusChange, 
+const StudentGrid = ({
+  questions = [],
+  onQuestionStatusChange,
   onQuestionClick,
-  statusFilter = 'all',
-  studentFilter = ''
+  statusFilter = "all",
+  studentFilter = "",
 }) => {
   const [expandedStudents, setExpandedStudents] = useState(new Set());
 
@@ -144,20 +149,20 @@ const StudentGrid = ({
 
     // Filter by student name if specified
     if (studentFilter.trim()) {
-      filteredQuestions = filteredQuestions.filter(q => 
+      filteredQuestions = filteredQuestions.filter((q) =>
         q.studentName.toLowerCase().includes(studentFilter.toLowerCase())
       );
     }
 
     // Filter by status
-    if (statusFilter !== 'all') {
-      filteredQuestions = filteredQuestions.filter(q => {
+    if (statusFilter !== "all") {
+      filteredQuestions = filteredQuestions.filter((q) => {
         switch (statusFilter) {
-          case 'answered':
+          case "answered":
             return q.isAnswered;
-          case 'unanswered':
+          case "unanswered":
             return !q.isAnswered;
-          case 'important':
+          case "important":
             return q.isImportant;
           default:
             return true;
@@ -166,28 +171,28 @@ const StudentGrid = ({
     }
 
     // Group by student
-    const grouped = groupBy(filteredQuestions, 'studentName');
+    const grouped = groupBy(filteredQuestions, "studentName");
 
     // Calculate stats for each student
     const stats = {};
-    Object.keys(grouped).forEach(studentName => {
+    Object.keys(grouped).forEach((studentName) => {
       const studentQuestions = grouped[studentName];
       stats[studentName] = {
         total: studentQuestions.length,
-        answered: studentQuestions.filter(q => q.isAnswered).length,
-        unanswered: studentQuestions.filter(q => !q.isAnswered).length,
-        important: studentQuestions.filter(q => q.isImportant).length
+        answered: studentQuestions.filter((q) => q.isAnswered).length,
+        unanswered: studentQuestions.filter((q) => !q.isAnswered).length,
+        important: studentQuestions.filter((q) => q.isImportant).length,
       };
     });
 
     return {
       groupedQuestions: grouped,
-      studentStats: stats
+      studentStats: stats,
     };
   }, [questions, statusFilter, studentFilter]);
 
   const toggleStudentExpansion = (studentName) => {
-    setExpandedStudents(prev => {
+    setExpandedStudents((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(studentName)) {
         newSet.delete(studentName);
@@ -205,7 +210,10 @@ const StudentGrid = ({
       <EmptyState>
         <div className="icon">💭</div>
         <h3>No Questions Yet</h3>
-        <p>Questions from students will appear here when they start asking during the session.</p>
+        <p>
+          Questions from students will appear here when they start asking during
+          the session.
+        </p>
       </EmptyState>
     );
   }
@@ -222,24 +230,22 @@ const StudentGrid = ({
 
   return (
     <GridContainer>
-      {studentNames.map(studentName => {
+      {studentNames.map((studentName) => {
         const studentQuestions = groupedQuestions[studentName];
         const stats = studentStats[studentName];
         const isExpanded = expandedStudents.has(studentName);
-        
+
         return (
           <StudentCard key={studentName}>
-            <StudentHeader 
+            <StudentHeader
               onClick={() => toggleStudentExpansion(studentName)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: "pointer" }}
             >
               <StudentInfo>
-                <StudentAvatar>
-                  {getInitials(studentName)}
-                </StudentAvatar>
+                <StudentAvatar>{getInitials(studentName)}</StudentAvatar>
                 <StudentName>{studentName}</StudentName>
               </StudentInfo>
-              
+
               <QuestionStats>
                 <StatBadge type="total">{stats.total}</StatBadge>
                 {stats.unanswered > 0 && (
@@ -253,7 +259,7 @@ const StudentGrid = ({
                 )}
               </QuestionStats>
             </StudentHeader>
-            
+
             <QuestionsContainer>
               {studentQuestions.length === 0 ? (
                 <NoQuestionsMessage>
@@ -262,7 +268,7 @@ const StudentGrid = ({
               ) : isExpanded ? (
                 studentQuestions
                   .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                  .map(question => (
+                  .map((question) => (
                     <StickyNote
                       key={question._id}
                       question={question}
@@ -277,7 +283,7 @@ const StudentGrid = ({
                 studentQuestions
                   .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
                   .slice(0, 2)
-                  .map(question => (
+                  .map((question) => (
                     <StickyNote
                       key={question._id}
                       question={question}
@@ -289,15 +295,15 @@ const StudentGrid = ({
                     />
                   ))
               )}
-              
+
               {!isExpanded && studentQuestions.length > 2 && (
-                <div 
-                  style={{ 
-                    padding: theme.spacing[2], 
-                    textAlign: 'center', 
+                <div
+                  style={{
+                    padding: theme.spacing[2],
+                    textAlign: "center",
                     color: theme.colors.primary,
-                    cursor: 'pointer',
-                    fontSize: theme.fontSizes.sm
+                    cursor: "pointer",
+                    fontSize: theme.fontSizes.sm,
                   }}
                   onClick={() => toggleStudentExpansion(studentName)}
                 >

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useApp } from '../../context/AppContext';
-import sessionService from '../../services/sessionService';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { VALIDATION_RULES, UI_MESSAGES } from '../../utils/constants';
-import { validateSessionId } from '../../utils/validators';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useApp } from "../../context/AppContext";
+import sessionService from "../../services/sessionService";
+import LoadingSpinner from "../common/LoadingSpinner";
+import { VALIDATION_RULES, UI_MESSAGES } from "../../utils/constants";
+import { validateSessionId } from "../../utils/validators";
 
 const SessionJoinContainer = styled.div`
   max-width: 400px;
@@ -55,11 +55,12 @@ const Label = styled.label`
 const Input = styled.input`
   width: 100%;
   padding: 1rem;
-  border: 2px solid ${({ theme, hasError }) => 
-    hasError ? theme.colors.danger : theme.colors.border};
+  border: 2px solid
+    ${({ theme, hasError }) =>
+      hasError ? theme.colors.danger : theme.colors.border};
   border-radius: 8px;
   font-size: 1rem;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: border-color 0.3s ease;
@@ -124,33 +125,34 @@ const ExampleId = styled.code`
   background: ${({ theme }) => theme.colors.border};
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.primary};
 `;
 
 const SessionJoin = () => {
   const { actions } = useApp();
-  const [sessionId, setSessionId] = useState('');
-  const [studentName, setStudentName] = useState('');
+  const [sessionId, setSessionId] = useState("");
+  const [studentName, setStudentName] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSessionIdChange = (e) => {
     let value = e.target.value.toUpperCase();
-    
+
     // Auto-add VV- prefix if not present
-    if (value && !value.startsWith('VV-')) {
-      value = 'VV-' + value.replace(/^VV-?/, '');
+    if (value && !value.startsWith("VV-")) {
+      value = "VV-" + value.replace(/^VV-?/, "");
     }
-    
+
     // Limit to expected format length
-    if (value.length <= 9) { // VV-XXXXXX = 9 characters max
+    if (value.length <= 9) {
+      // VV-XXXXXX = 9 characters max
       setSessionId(value);
-      
+
       // Clear session ID error when user starts typing valid format
       if (errors.sessionId && value.length >= 3) {
-        setErrors(prev => ({ ...prev, sessionId: null }));
+        setErrors((prev) => ({ ...prev, sessionId: null }));
       }
     }
   };
@@ -159,10 +161,10 @@ const SessionJoin = () => {
     const value = e.target.value;
     if (value.length <= VALIDATION_RULES.STUDENT_NAME.MAX_LENGTH) {
       setStudentName(value);
-      
+
       // Clear name error when user starts typing
       if (errors.studentName && value.trim().length > 0) {
-        setErrors(prev => ({ ...prev, studentName: null }));
+        setErrors((prev) => ({ ...prev, studentName: null }));
       }
     }
   };
@@ -172,16 +174,18 @@ const SessionJoin = () => {
 
     // Validate session ID
     if (!sessionId.trim()) {
-      newErrors.sessionId = 'Session ID is required';
+      newErrors.sessionId = "Session ID is required";
     } else if (!validateSessionId(sessionId)) {
-      newErrors.sessionId = 'Invalid session ID format. Expected: VV-XXXXXX';
+      newErrors.sessionId = "Invalid session ID format. Expected: VV-XXXXXX";
     }
 
     // Validate student name
     if (!studentName.trim()) {
-      newErrors.studentName = 'Your name is required';
-    } else if (studentName.trim().length < VALIDATION_RULES.STUDENT_NAME.MIN_LENGTH) {
-      newErrors.studentName = 'Name must be at least 1 character';
+      newErrors.studentName = "Your name is required";
+    } else if (
+      studentName.trim().length < VALIDATION_RULES.STUDENT_NAME.MIN_LENGTH
+    ) {
+      newErrors.studentName = "Name must be at least 1 character";
     }
 
     setErrors(newErrors);
@@ -190,19 +194,26 @@ const SessionJoin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       // Check if session exists and is active
-      const sessionData = await sessionService.getSessionById(sessionId);
+      const response = await sessionService.getSessionById(sessionId);
       
-      if (!sessionData.active) {
-        setErrors({ sessionId: 'This session is not currently active' });
+      if (!response.success) {
+        setErrors({ sessionId: response.message || "Failed to fetch session" });
+        return;
+      }
+      
+      const sessionData = response.data;
+
+      if (!sessionData.isActive) {
+        setErrors({ sessionId: "This session is not currently active" });
         return;
       }
 
@@ -210,17 +221,16 @@ const SessionJoin = () => {
       actions.setCurrentSession(sessionData);
       actions.setStudentName(studentName.trim());
       actions.setSessionJoined(true);
-      
+
       // You can add success toast/notification here
-      
     } catch (error) {
-      console.error('Failed to join session:', error);
-      
+      console.error("Failed to join session:", error);
+
       if (error.response?.status === 404) {
-        setErrors({ sessionId: 'Session not found. Please check the ID.' });
+        setErrors({ sessionId: "Session not found. Please check the ID." });
       } else {
-        setErrors({ 
-          form: error.response?.data?.message || UI_MESSAGES.ERROR 
+        setErrors({
+          form: error.response?.data?.message || UI_MESSAGES.ERROR,
         });
       }
     } finally {
@@ -247,9 +257,7 @@ const SessionJoin = () => {
             hasError={!!errors.sessionId}
             disabled={isLoading}
           />
-          {errors.sessionId && (
-            <ErrorMessage>{errors.sessionId}</ErrorMessage>
-          )}
+          {errors.sessionId && <ErrorMessage>{errors.sessionId}</ErrorMessage>}
         </InputGroup>
 
         <InputGroup>
@@ -269,7 +277,7 @@ const SessionJoin = () => {
         </InputGroup>
 
         {errors.form && (
-          <ErrorMessage style={{ textAlign: 'center' }}>
+          <ErrorMessage style={{ textAlign: "center" }}>
             {errors.form}
           </ErrorMessage>
         )}
@@ -281,7 +289,7 @@ const SessionJoin = () => {
               Joining Session...
             </>
           ) : (
-            'Join Session'
+            "Join Session"
           )}
         </SubmitButton>
       </Form>
@@ -289,7 +297,7 @@ const SessionJoin = () => {
       <HelpText>
         <strong>How to get a Session ID:</strong>
         <br />
-        Ask your instructor for the current session ID. It should look like{' '}
+        Ask your instructor for the current session ID. It should look like{" "}
         <ExampleId>VV-ABC123</ExampleId> or <ExampleId>VV-XYZ789</ExampleId>.
         <br />
         <br />

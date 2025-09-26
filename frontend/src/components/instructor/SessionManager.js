@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Button, Card, ErrorText, SuccessText } from '../../styles/GlobalStyles';
-import { createSession, endSession, getActiveCourseSession } from '../../services/sessionService';
-import { copyToClipboard } from '../../utils/helpers';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import {
+  Button,
+  Card,
+  ErrorText,
+  SuccessText,
+} from "../../styles/GlobalStyles";
+import {
+  createSession,
+  endSession,
+  getActiveCourseSession,
+} from "../../services/sessionService";
+import { copyToClipboard } from "../../utils/helpers";
 
 const ManagerContainer = styled(Card)`
   text-align: center;
@@ -11,8 +20,10 @@ const ManagerContainer = styled(Card)`
 
 const SessionStatus = styled.div`
   padding: ${theme.spacing[6]};
-  
-  ${props => props.active && `
+
+  ${(props) =>
+    props.active &&
+    `
     background: linear-gradient(135deg, ${theme.colors.success}20, ${theme.colors.primary}20);
     border-radius: ${theme.borderRadius.lg};
   `}
@@ -28,7 +39,7 @@ const SessionIdDisplay = styled.div`
 
 const SessionIdText = styled.div`
   font-family: ${theme.fonts.monospace};
-  font-size: ${theme.fontSizes['2xl']};
+  font-size: ${theme.fontSizes["2xl"]};
   font-weight: ${theme.fontWeights.bold};
   color: ${theme.colors.primary};
   margin-bottom: ${theme.spacing[2]};
@@ -51,13 +62,13 @@ const SessionInfo = styled.div`
 
 const InfoItem = styled.div`
   text-align: center;
-  
+
   .label {
     font-size: ${theme.fontSizes.sm};
     color: ${theme.colors.muted};
     margin-bottom: ${theme.spacing[1]};
   }
-  
+
   .value {
     font-size: ${theme.fontSizes.lg};
     font-weight: ${theme.fontWeights.semibold};
@@ -72,21 +83,21 @@ const ActionButtons = styled.div`
   margin-top: ${theme.spacing[6]};
 `;
 
-const SessionManager = ({ 
-  course, 
-  currentSession, 
-  onSessionStart, 
+const SessionManager = ({
+  course,
+  currentSession,
+  onSessionStart,
   onSessionEnd,
   onError,
-  onSuccess 
+  onSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [sessionStats, setSessionStats] = useState({
-    duration: '',
+    duration: "",
     questionsCount: 0,
-    studentsCount: 0
+    studentsCount: 0,
   });
 
   // Check for existing active session when course changes
@@ -119,12 +130,12 @@ const SessionManager = ({
 
   const updateSessionStats = () => {
     if (!currentSession) return;
-    
+
     const startTime = new Date(currentSession.startTime);
     const now = new Date();
     const diffInMinutes = Math.floor((now - startTime) / (1000 * 60));
-    
-    let duration = '';
+
+    let duration = "";
     if (diffInMinutes < 60) {
       duration = `${diffInMinutes} min`;
     } else {
@@ -132,37 +143,39 @@ const SessionManager = ({
       const minutes = diffInMinutes % 60;
       duration = `${hours}h ${minutes}m`;
     }
-    
-    setSessionStats(prev => ({
+
+    setSessionStats((prev) => ({
       ...prev,
       duration,
-      questionsCount: currentSession.questionCount || 0
+      questionsCount: currentSession.questionCount || 0,
     }));
   };
 
   const handleStartSession = async () => {
     if (!course) return;
-    
+
     setLoading(true);
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     try {
       const response = await createSession({
         courseId: course._id,
-        instructor: course.instructor
+        instructor: course.instructor,
       });
-      
+
       if (response.success) {
         onSessionStart(response.data);
-        setSuccess('Session started successfully! Share the session ID with your students.');
-        onSuccess?.('Session started successfully!');
+        setSuccess(
+          "Session started successfully! Share the session ID with your students."
+        );
+        onSuccess?.("Session started successfully!");
       } else {
-        setError(response.message || 'Failed to start session');
-        onError?.(response.message || 'Failed to start session');
+        setError(response.message || "Failed to start session");
+        onError?.(response.message || "Failed to start session");
       }
     } catch (err) {
-      const errorMsg = 'Failed to start session. Please try again.';
+      const errorMsg = "Failed to start session. Please try again.";
       setError(errorMsg);
       onError?.(errorMsg);
     } finally {
@@ -172,28 +185,32 @@ const SessionManager = ({
 
   const handleEndSession = async () => {
     if (!currentSession) return;
-    
-    if (!window.confirm('Are you sure you want to end this session? This action cannot be undone.')) {
+
+    if (
+      !window.confirm(
+        "Are you sure you want to end this session? This action cannot be undone."
+      )
+    ) {
       return;
     }
-    
+
     setLoading(true);
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     try {
       const response = await endSession(currentSession.sessionId);
-      
+
       if (response.success) {
         onSessionEnd();
-        setSuccess('Session ended successfully.');
-        onSuccess?.('Session ended successfully.');
+        setSuccess("Session ended successfully.");
+        onSuccess?.("Session ended successfully.");
       } else {
-        setError(response.message || 'Failed to end session');
-        onError?.(response.message || 'Failed to end session');
+        setError(response.message || "Failed to end session");
+        onError?.(response.message || "Failed to end session");
       }
     } catch (err) {
-      const errorMsg = 'Failed to end session. Please try again.';
+      const errorMsg = "Failed to end session. Please try again.";
       setError(errorMsg);
       onError?.(errorMsg);
     } finally {
@@ -203,13 +220,13 @@ const SessionManager = ({
 
   const handleCopySessionId = async () => {
     if (!currentSession) return;
-    
+
     const success = await copyToClipboard(currentSession.sessionId);
     if (success) {
-      setSuccess('Session ID copied to clipboard!');
-      onSuccess?.('Session ID copied to clipboard!');
+      setSuccess("Session ID copied to clipboard!");
+      onSuccess?.("Session ID copied to clipboard!");
     } else {
-      setError('Failed to copy session ID');
+      setError("Failed to copy session ID");
     }
   };
 
@@ -225,32 +242,38 @@ const SessionManager = ({
   return (
     <ManagerContainer>
       <h3>Session Manager</h3>
-      <p>Course: <strong>{course.title} ({course.code})</strong></p>
-      
+      <p>
+        Course:{" "}
+        <strong>
+          {course.title} ({course.code})
+        </strong>
+      </p>
+
       {error && <ErrorText>{error}</ErrorText>}
       {success && <SuccessText>{success}</SuccessText>}
-      
+
       <SessionStatus active={!!currentSession}>
         {currentSession ? (
           <>
-            <h4 style={{ color: theme.colors.success, marginBottom: theme.spacing[4] }}>
+            <h4
+              style={{
+                color: theme.colors.success,
+                marginBottom: theme.spacing[4],
+              }}
+            >
               📍 Session Active
             </h4>
-            
+
             <SessionIdDisplay>
               <div style={{ marginBottom: theme.spacing[2] }}>
                 Share this Session ID with your students:
               </div>
               <SessionIdText>{currentSession.sessionId}</SessionIdText>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={handleCopySessionId}
-              >
+              <Button variant="primary" size="sm" onClick={handleCopySessionId}>
                 📋 Copy ID
               </Button>
             </SessionIdDisplay>
-            
+
             <SessionInfo>
               <InfoItem>
                 <div className="label">Duration</div>
@@ -267,34 +290,40 @@ const SessionManager = ({
                 </div>
               </InfoItem>
             </SessionInfo>
-            
+
             <ActionButtons>
-              <Button 
-                variant="danger" 
+              <Button
+                variant="danger"
                 onClick={handleEndSession}
                 disabled={loading}
               >
-                {loading ? 'Ending...' : 'End Session'}
+                {loading ? "Ending..." : "End Session"}
               </Button>
             </ActionButtons>
           </>
         ) : (
           <>
-            <h4 style={{ color: theme.colors.muted, marginBottom: theme.spacing[4] }}>
+            <h4
+              style={{
+                color: theme.colors.muted,
+                marginBottom: theme.spacing[4],
+              }}
+            >
               ⏸️ No Active Session
             </h4>
             <p style={{ marginBottom: theme.spacing[6] }}>
-              Start a new Q&A session for your students to ask questions in real-time.
+              Start a new Q&A session for your students to ask questions in
+              real-time.
             </p>
-            
+
             <ActionButtons>
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 size="lg"
                 onClick={handleStartSession}
                 disabled={loading}
               >
-                {loading ? 'Starting...' : '🚀 Start Session'}
+                {loading ? "Starting..." : "🚀 Start Session"}
               </Button>
             </ActionButtons>
           </>

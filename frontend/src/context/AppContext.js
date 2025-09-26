@@ -7,7 +7,7 @@ const initialState = {
   userRole: null,
   currentSession: null,
   currentCourse: null,
-  
+
   // Student specific state
   studentName: "",
   sessionJoined: false,
@@ -38,7 +38,7 @@ export const ActionTypes = {
   SET_CURRENT_SESSION: "SET_CURRENT_SESSION",
   SET_CURRENT_COURSE: "SET_CURRENT_COURSE",
   CLEAR_SESSION: "CLEAR_SESSION",
-  
+
   // Student actions
   SET_STUDENT_NAME: "SET_STUDENT_NAME",
   SET_SESSION_JOINED: "SET_SESSION_JOINED",
@@ -319,6 +319,21 @@ export const AppProvider = ({ children }) => {
     clearFilters: () => {
       dispatch({ type: ActionTypes.CLEAR_FILTERS });
     },
+
+    // Reset app to initial state
+    resetApp: () => {
+      // Clear localStorage
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("currentSession");
+      localStorage.removeItem("currentCourse");
+      localStorage.removeItem("studentName");
+      localStorage.removeItem("sessionJoined");
+
+      // Reset state to initial
+      dispatch({ type: ActionTypes.SET_USER_ROLE, payload: null });
+      dispatch({ type: ActionTypes.CLEAR_SESSION });
+      dispatch({ type: ActionTypes.CLEAR_MESSAGES });
+    },
   };
 
   // Load persisted state on mount
@@ -349,7 +364,10 @@ export const AppProvider = ({ children }) => {
       }
 
       if (savedStudentName) {
-        dispatch({ type: ActionTypes.SET_STUDENT_NAME, payload: savedStudentName });
+        dispatch({
+          type: ActionTypes.SET_STUDENT_NAME,
+          payload: savedStudentName,
+        });
       }
 
       if (savedSessionJoined === "true") {

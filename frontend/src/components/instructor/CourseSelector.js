@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Button, Input, Label, Card, ErrorText, LoadingSpinner } from '../../styles/GlobalStyles';
-import { getCourses, createCourse } from '../../services/courseService';
-import { validateCourse } from '../../utils/validators';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  ErrorText,
+  LoadingSpinner,
+} from "../../styles/GlobalStyles";
+import { getCourses, createCourse } from "../../services/courseService";
+import { validateCourse } from "../../utils/validators";
 
 const SelectorContainer = styled.div`
   display: grid;
   gap: ${theme.spacing[6]};
-  
+
   @media (min-width: ${theme.breakpoints.lg}) {
     grid-template-columns: 2fr 1fr;
   }
@@ -22,13 +29,15 @@ const CourseList = styled.div`
 const CourseCard = styled(Card)`
   cursor: pointer;
   transition: all ${theme.transitions.fast};
-  
+
   &:hover {
     border: 2px solid ${theme.colors.primary};
     transform: translateY(-2px);
   }
-  
-  ${props => props.selected && `
+
+  ${(props) =>
+    props.selected &&
+    `
     border: 2px solid ${theme.colors.primary};
     background: ${theme.colors.primary}10;
   `}
@@ -78,7 +87,7 @@ const EmptyState = styled.div`
   text-align: center;
   padding: ${theme.spacing[8]};
   color: ${theme.colors.muted};
-  
+
   h3 {
     margin-bottom: ${theme.spacing[4]};
   }
@@ -87,15 +96,15 @@ const EmptyState = styled.div`
 const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
-    title: '',
-    code: '',
-    instructor: '',
-    description: ''
+    title: "",
+    code: "",
+    instructor: "",
+    description: "",
   });
   const [formErrors, setFormErrors] = useState({});
   const [creating, setCreating] = useState(false);
@@ -107,17 +116,17 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
 
   const loadCourses = async () => {
     setLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
       const response = await getCourses();
       if (response.success) {
         setCourses(response.data);
       } else {
-        setError(response.message || 'Failed to load courses');
+        setError(response.message || "Failed to load courses");
       }
     } catch (err) {
-      setError('Failed to connect to server');
+      setError("Failed to connect to server");
     } finally {
       setLoading(false);
     }
@@ -125,32 +134,32 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear specific field error when user starts typing
     if (formErrors[name]) {
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const handleCreateCourse = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     const validation = validateCourse(formData);
     if (!validation.isValid) {
       const errors = {};
-      validation.errors.forEach(error => {
-        if (error.includes('title')) errors.title = error;
-        if (error.includes('code')) errors.code = error;
-        if (error.includes('instructor')) errors.instructor = error;
-        if (error.includes('description')) errors.description = error;
+      validation.errors.forEach((error) => {
+        if (error.includes("title")) errors.title = error;
+        if (error.includes("code")) errors.code = error;
+        if (error.includes("instructor")) errors.instructor = error;
+        if (error.includes("description")) errors.description = error;
       });
       setFormErrors(errors);
       return;
@@ -158,29 +167,31 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
 
     setCreating(true);
     setFormErrors({});
-    
+
     try {
       const response = await createCourse(formData);
       if (response.success) {
         // Add new course to list
-        setCourses(prev => [response.data, ...prev]);
-        
+        setCourses((prev) => [response.data, ...prev]);
+
         // Reset form
         setFormData({
-          title: '',
-          code: '',
-          instructor: '',
-          description: ''
+          title: "",
+          code: "",
+          instructor: "",
+          description: "",
         });
         setShowCreateForm(false);
-        
+
         // Auto-select the new course
         onCourseSelect(response.data);
       } else {
-        setFormErrors({ general: response.message || 'Failed to create course' });
+        setFormErrors({
+          general: response.message || "Failed to create course",
+        });
       }
     } catch (err) {
-      setFormErrors({ general: 'Failed to connect to server' });
+      setFormErrors({ general: "Failed to connect to server" });
     } finally {
       setCreating(false);
     }
@@ -195,7 +206,7 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
       <div>
         <h2>Select a Course</h2>
         {error && <ErrorText>{error}</ErrorText>}
-        
+
         <CourseList>
           {courses.length === 0 ? (
             <EmptyState>
@@ -203,7 +214,7 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
               <p>Create your first course to get started with VidyaVichara.</p>
             </EmptyState>
           ) : (
-            courses.map(course => (
+            courses.map((course) => (
               <CourseCard
                 key={course._id}
                 selected={selectedCourse?._id === course._id}
@@ -218,7 +229,7 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
                   </div>
                   <CourseCode>{course.code}</CourseCode>
                 </CourseInfo>
-                
+
                 {course.description && (
                   <CourseDetails>{course.description}</CourseDetails>
                 )}
@@ -232,10 +243,12 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
         {!showCreateForm ? (
           <Card>
             <h3>Create New Course</h3>
-            <p>Don't see your course? Create a new one to start a Q&A session.</p>
-            <Button 
-              variant="primary" 
-              fullWidth 
+            <p>
+              Don't see your course? Create a new one to start a Q&A session.
+            </p>
+            <Button
+              variant="primary"
+              fullWidth
               onClick={() => setShowCreateForm(true)}
             >
               Create Course
@@ -244,14 +257,14 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
         ) : (
           <CreateCourseForm>
             <FormTitle>Create New Course</FormTitle>
-            
+
             <form onSubmit={handleCreateCourse}>
               {formErrors.general && (
                 <ErrorText style={{ marginBottom: theme.spacing[4] }}>
                   {formErrors.general}
                 </ErrorText>
               )}
-              
+
               <FormGroup>
                 <Label htmlFor="title">Course Title *</Label>
                 <Input
@@ -291,7 +304,9 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
                   placeholder="e.g., Dr. Smith"
                   error={!!formErrors.instructor}
                 />
-                {formErrors.instructor && <ErrorText>{formErrors.instructor}</ErrorText>}
+                {formErrors.instructor && (
+                  <ErrorText>{formErrors.instructor}</ErrorText>
+                )}
               </FormGroup>
 
               <FormGroup>
@@ -305,10 +320,12 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
                   placeholder="Brief course description"
                   error={!!formErrors.description}
                 />
-                {formErrors.description && <ErrorText>{formErrors.description}</ErrorText>}
+                {formErrors.description && (
+                  <ErrorText>{formErrors.description}</ErrorText>
+                )}
               </FormGroup>
 
-              <div style={{ display: 'flex', gap: theme.spacing[3] }}>
+              <div style={{ display: "flex", gap: theme.spacing[3] }}>
                 <Button
                   type="button"
                   variant="outline"
@@ -316,10 +333,10 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
                     setShowCreateForm(false);
                     setFormErrors({});
                     setFormData({
-                      title: '',
-                      code: '',
-                      instructor: '',
-                      description: ''
+                      title: "",
+                      code: "",
+                      instructor: "",
+                      description: "",
                     });
                   }}
                 >
@@ -331,7 +348,7 @@ const CourseSelector = ({ selectedCourse, onCourseSelect }) => {
                   disabled={creating}
                   style={{ flex: 1 }}
                 >
-                  {creating ? 'Creating...' : 'Create Course'}
+                  {creating ? "Creating..." : "Create Course"}
                 </Button>
               </div>
             </form>

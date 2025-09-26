@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { theme } from '../../styles/theme';
-import { Button } from '../../styles/GlobalStyles';
-import { QUESTION_STATUS } from '../../utils/constants';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { theme } from "../../styles/theme";
+import { Button } from "../../styles/GlobalStyles";
+import { QUESTION_STATUS } from "../../utils/constants";
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -33,26 +33,26 @@ const StatusButton = styled(Button)`
   padding: ${theme.spacing[2]} ${theme.spacing[4]};
   font-size: ${theme.fontSizes.sm};
   border-radius: ${theme.borderRadius.full};
-  
-  ${props => {
+
+  ${(props) => {
     if (props.active) {
       switch (props.status) {
-        case 'all':
+        case "all":
           return `
             background: ${theme.colors.primary};
             color: white;
           `;
-        case 'unanswered':
+        case "unanswered":
           return `
             background: ${theme.colors.warning};
             color: white;
           `;
-        case 'answered':
+        case "answered":
           return `
             background: ${theme.colors.success};
             color: white;
           `;
-        case 'important':
+        case "important":
           return `
             background: ${theme.colors.danger};
             color: white;
@@ -83,7 +83,7 @@ const StudentSearch = styled.input`
   border-radius: ${theme.borderRadius.md};
   font-size: ${theme.fontSizes.sm};
   min-width: 200px;
-  
+
   &:focus {
     outline: none;
     border-color: ${theme.colors.primary};
@@ -105,13 +105,18 @@ const QuestionCount = styled.div`
 `;
 
 const CountBadge = styled.span`
-  background: ${props => {
+  background: ${(props) => {
     switch (props.type) {
-      case 'total': return theme.colors.primary;
-      case 'unanswered': return theme.colors.warning;
-      case 'answered': return theme.colors.success;
-      case 'important': return theme.colors.danger;
-      default: return theme.colors.muted;
+      case "total":
+        return theme.colors.primary;
+      case "unanswered":
+        return theme.colors.warning;
+      case "answered":
+        return theme.colors.success;
+      case "important":
+        return theme.colors.danger;
+      default:
+        return theme.colors.muted;
     }
   }};
   color: white;
@@ -137,15 +142,17 @@ const QuestionFilters = ({
     total: 0,
     unanswered: 0,
     answered: 0,
-    important: 0
-  }
+    important: 0,
+  },
 }) => {
-  const [localStudentFilter, setLocalStudentFilter] = useState(studentFilter || '');
+  const [localStudentFilter, setLocalStudentFilter] = useState(
+    studentFilter || ""
+  );
 
   const handleStudentSearchChange = (e) => {
     const value = e.target.value;
     setLocalStudentFilter(value);
-    
+
     // Debounce the search to avoid too many calls
     clearTimeout(handleStudentSearchChange.timeoutId);
     handleStudentSearchChange.timeoutId = setTimeout(() => {
@@ -154,24 +161,36 @@ const QuestionFilters = ({
   };
 
   const handleClearFilters = () => {
-    setLocalStudentFilter('');
+    setLocalStudentFilter("");
     onClearFilters();
   };
 
   const statusOptions = [
-    { key: 'all', label: 'All Questions', count: questionCounts.total },
-    { key: QUESTION_STATUS.UNANSWERED, label: 'Unanswered', count: questionCounts.unanswered },
-    { key: QUESTION_STATUS.ANSWERED, label: 'Answered', count: questionCounts.answered },
-    { key: QUESTION_STATUS.IMPORTANT, label: 'Important', count: questionCounts.important }
+    { key: "all", label: "All Questions", count: questionCounts.total },
+    {
+      key: QUESTION_STATUS.UNANSWERED,
+      label: "Unanswered",
+      count: questionCounts.unanswered,
+    },
+    {
+      key: QUESTION_STATUS.ANSWERED,
+      label: "Answered",
+      count: questionCounts.answered,
+    },
+    {
+      key: QUESTION_STATUS.IMPORTANT,
+      label: "Important",
+      count: questionCounts.important,
+    },
   ];
 
-  const hasActiveFilters = statusFilter !== 'all' || studentFilter;
+  const hasActiveFilters = statusFilter !== "all" || studentFilter;
 
   return (
     <FiltersContainer>
       <FilterGroup>
         <FilterLabel>Filter by Status:</FilterLabel>
-        {statusOptions.map(option => (
+        {statusOptions.map((option) => (
           <StatusButton
             key={option.key}
             status={option.key}
@@ -195,11 +214,7 @@ const QuestionFilters = ({
       </FilterGroup>
 
       {hasActiveFilters && (
-        <ClearButton
-          variant="outline"
-          size="sm"
-          onClick={handleClearFilters}
-        >
+        <ClearButton variant="outline" size="sm" onClick={handleClearFilters}>
           Clear Filters
         </ClearButton>
       )}
@@ -207,13 +222,13 @@ const QuestionFilters = ({
       <QuestionCount>
         <span>Total:</span>
         <CountBadge type="total">{questionCounts.total}</CountBadge>
-        
+
         <span>Unanswered:</span>
         <CountBadge type="unanswered">{questionCounts.unanswered}</CountBadge>
-        
+
         <span>Answered:</span>
         <CountBadge type="answered">{questionCounts.answered}</CountBadge>
-        
+
         <span>Important:</span>
         <CountBadge type="important">{questionCounts.important}</CountBadge>
       </QuestionCount>

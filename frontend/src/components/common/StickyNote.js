@@ -1,41 +1,52 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import PropTypes from 'prop-types';
-import { theme } from '../../styles/theme';
-import { 
-  STICKY_NOTE_COLORS, 
-  QUESTION_STATUS 
-} from '../../utils/constants';
-import { formatTime, getInitials } from '../../utils/helpers';
-import { stickyNotePeel } from '../../styles/GlobalStyles';
+import React, { useState } from "react";
+import styled from "styled-components";
+import PropTypes from "prop-types";
+import { theme } from "../../styles/theme";
+import { STICKY_NOTE_COLORS, QUESTION_STATUS } from "../../utils/constants";
+import { formatTime, getInitials } from "../../utils/helpers";
+import { stickyNotePeel } from "../../styles/GlobalStyles";
 
 const StickyNoteContainer = styled.div`
   position: relative;
-  background: ${props => getStickyNoteColor(props.question)};
+  background: ${(props) => getStickyNoteColor(props.question)};
   border-radius: ${theme.borderRadius.lg};
   padding: ${theme.spacing[4]};
   margin: ${theme.spacing[2]};
-  min-height: ${props => props.size === 'small' ? '120px' : props.size === 'large' ? '200px' : '150px'};
-  max-width: ${props => props.size === 'small' ? '180px' : props.size === 'large' ? '280px' : '220px'};
+  min-height: ${(props) =>
+    props.size === "small"
+      ? "120px"
+      : props.size === "large"
+      ? "200px"
+      : "150px"};
+  max-width: ${(props) =>
+    props.size === "small"
+      ? "180px"
+      : props.size === "large"
+      ? "280px"
+      : "220px"};
   box-shadow: ${theme.shadows.stickyNote};
-  cursor: ${props => props.onClick ? 'pointer' : 'default'};
+  cursor: ${(props) => (props.onClick ? "pointer" : "default")};
   transition: all ${theme.transitions.normal};
   transform-style: preserve-3d;
-  
+
   &:hover {
     box-shadow: ${theme.shadows.stickyNoteHover};
     transform: translateY(-2px);
     animation: ${stickyNotePeel} 0.6s ease-in-out;
   }
-  
+
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     right: 0;
     width: 20px;
     height: 20px;
-    background: linear-gradient(45deg, transparent 30%, rgba(0,0,0,0.1) 100%);
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
     border-radius: 0 ${theme.borderRadius.lg} 0 0;
   }
 `;
@@ -45,7 +56,7 @@ const StudentInfo = styled.div`
   align-items: center;
   margin-bottom: ${theme.spacing[3]};
   padding-bottom: ${theme.spacing[2]};
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const StudentAvatar = styled.div`
@@ -75,7 +86,8 @@ const Timestamp = styled.span`
 `;
 
 const QuestionContent = styled.div`
-  font-size: ${props => props.size === 'small' ? theme.fontSizes.xs : theme.fontSizes.sm};
+  font-size: ${(props) =>
+    props.size === "small" ? theme.fontSizes.xs : theme.fontSizes.sm};
   line-height: ${theme.lineHeights.normal};
   color: ${theme.colors.text};
   margin-bottom: ${theme.spacing[3]};
@@ -95,15 +107,15 @@ const StatusBadge = styled.span`
   font-weight: ${theme.fontWeights.medium};
   border-radius: ${theme.borderRadius.full};
   text-transform: uppercase;
-  
-  ${props => {
-    if (props.type === 'answered') {
+
+  ${(props) => {
+    if (props.type === "answered") {
       return `
         background: ${theme.colors.success};
         color: white;
       `;
     }
-    if (props.type === 'important') {
+    if (props.type === "important") {
       return `
         background: ${theme.colors.danger};
         color: white;
@@ -122,7 +134,7 @@ const ActionButtons = styled.div`
   margin-top: ${theme.spacing[2]};
   opacity: 0;
   transition: opacity ${theme.transitions.fast};
-  
+
   ${StickyNoteContainer}:hover & {
     opacity: 1;
   }
@@ -136,7 +148,7 @@ const ActionButton = styled.button`
   font-size: ${theme.fontSizes.xs};
   cursor: pointer;
   transition: all ${theme.transitions.fast};
-  
+
   &:hover {
     background: white;
     transform: scale(1.05);
@@ -159,48 +171,41 @@ const getStickyNoteColor = (question) => {
 
 const StickyNote = ({
   question,
-  size = 'medium',
+  size = "medium",
   isInstructor = false,
   onStatusChange,
   onClick,
-  showActions = true
+  showActions = true,
 }) => {
   const handleAnsweredToggle = (e) => {
     e.stopPropagation();
     if (onStatusChange) {
-      onStatusChange(question._id, 'toggle_answered');
+      onStatusChange(question._id, "toggle_answered");
     }
   };
 
   const handleImportantToggle = (e) => {
     e.stopPropagation();
     if (onStatusChange) {
-      onStatusChange(question._id, 'toggle_important');
+      onStatusChange(question._id, "toggle_important");
     }
   };
 
-  const truncatedContent = size === 'small' && question.content.length > 100
-    ? question.content.substring(0, 100) + '...'
-    : question.content;
+  const truncatedContent =
+    size === "small" && question.content.length > 100
+      ? question.content.substring(0, 100) + "..."
+      : question.content;
 
   return (
-    <StickyNoteContainer
-      question={question}
-      size={size}
-      onClick={onClick}
-    >
+    <StickyNoteContainer question={question} size={size} onClick={onClick}>
       <StudentInfo>
-        <StudentAvatar>
-          {getInitials(question.studentName)}
-        </StudentAvatar>
+        <StudentAvatar>{getInitials(question.studentName)}</StudentAvatar>
         <StudentName>{question.studentName}</StudentName>
         <Timestamp>{formatTime(question.timestamp)}</Timestamp>
       </StudentInfo>
-      
-      <QuestionContent size={size}>
-        {truncatedContent}
-      </QuestionContent>
-      
+
+      <QuestionContent size={size}>{truncatedContent}</QuestionContent>
+
       <StatusIndicators>
         {question.isAnswered && (
           <StatusBadge type="answered">Answered</StatusBadge>
@@ -212,20 +217,24 @@ const StickyNote = ({
           <StatusBadge type="unanswered">New</StatusBadge>
         )}
       </StatusIndicators>
-      
+
       {isInstructor && showActions && (
         <ActionButtons>
           <ActionButton
             onClick={handleAnsweredToggle}
-            title={question.isAnswered ? 'Mark as unanswered' : 'Mark as answered'}
+            title={
+              question.isAnswered ? "Mark as unanswered" : "Mark as answered"
+            }
           >
-            {question.isAnswered ? '↩️' : '✅'}
+            {question.isAnswered ? "↩️" : "✅"}
           </ActionButton>
           <ActionButton
             onClick={handleImportantToggle}
-            title={question.isImportant ? 'Remove important' : 'Mark as important'}
+            title={
+              question.isImportant ? "Remove important" : "Mark as important"
+            }
           >
-            {question.isImportant ? '⭐' : '⚡'}
+            {question.isImportant ? "⭐" : "⚡"}
           </ActionButton>
         </ActionButtons>
       )}

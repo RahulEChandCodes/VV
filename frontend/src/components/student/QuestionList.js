@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import { useApp } from '../../context/AppContext';
-import questionService from '../../services/questionService';
-import StickyNote from '../common/StickyNote';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { UI_MESSAGES, QUESTION_STATUS } from '../../utils/constants';
+import React, { useState, useEffect, useCallback } from "react";
+import styled from "styled-components";
+import { useApp } from "../../context/AppContext";
+import questionService from "../../services/questionService";
+import StickyNote from "../common/StickyNote";
+import LoadingSpinner from "../common/LoadingSpinner";
+import { UI_MESSAGES, QUESTION_STATUS } from "../../utils/constants";
 
 const QuestionListContainer = styled.div`
   background: ${({ theme }) => theme.colors.surface};
@@ -69,7 +69,7 @@ const StatItem = styled.div`
 
 const StatNumber = styled.span`
   font-weight: 600;
-  color: ${({ theme, color = 'primary' }) => theme.colors[color]};
+  color: ${({ theme, color = "primary" }) => theme.colors[color]};
 `;
 
 const Controls = styled.div`
@@ -113,7 +113,7 @@ const AutoRefreshIndicator = styled.div`
   gap: 0.5rem;
   font-size: 0.75rem;
   color: ${({ theme }) => theme.colors.textSecondary};
-  
+
   .pulse {
     width: 8px;
     height: 8px;
@@ -123,9 +123,15 @@ const AutoRefreshIndicator = styled.div`
   }
 
   @keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 `;
 
@@ -197,19 +203,21 @@ const QuestionList = () => {
   const { currentSession } = state;
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const loadQuestions = useCallback(async () => {
     if (!currentSession?.sessionId) return;
 
     try {
-      setError('');
-      const data = await questionService.getQuestionsBySession(currentSession.sessionId);
+      setError("");
+      const data = await questionService.getQuestionsBySession(
+        currentSession.sessionId
+      );
       setQuestions(data || []);
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('Failed to load questions:', error);
+      console.error("Failed to load questions:", error);
       setError(error.response?.data?.message || UI_MESSAGES.ERROR);
     } finally {
       setIsLoading(false);
@@ -240,9 +248,11 @@ const QuestionList = () => {
   // Calculate statistics
   const stats = {
     total: questions.length,
-    unanswered: questions.filter(q => q.status === QUESTION_STATUS.UNANSWERED).length,
-    answered: questions.filter(q => q.status === QUESTION_STATUS.ANSWERED).length,
-    important: questions.filter(q => q.important).length,
+    unanswered: questions.filter((q) => q.status === QUESTION_STATUS.UNANSWERED)
+      .length,
+    answered: questions.filter((q) => q.status === QUESTION_STATUS.ANSWERED)
+      .length,
+    important: questions.filter((q) => q.important).length,
   };
 
   if (isLoading && questions.length === 0) {
@@ -273,7 +283,7 @@ const QuestionList = () => {
         <ErrorState>
           <div>❌</div>
           <div>{error}</div>
-          <RefreshButton onClick={handleRefresh} style={{ marginTop: '1rem' }}>
+          <RefreshButton onClick={handleRefresh} style={{ marginTop: "1rem" }}>
             Try Again
           </RefreshButton>
         </ErrorState>
@@ -288,34 +298,32 @@ const QuestionList = () => {
           <QuestionsIcon>💬</QuestionsIcon>
           Session Questions
         </Title>
-        
+
         <Stats>
           <StatItem>
             Total: <StatNumber>{stats.total}</StatNumber>
           </StatItem>
           <StatItem>
-            Unanswered: <StatNumber color="warning">{stats.unanswered}</StatNumber>
+            Unanswered:{" "}
+            <StatNumber color="warning">{stats.unanswered}</StatNumber>
           </StatItem>
           <StatItem>
             Answered: <StatNumber color="success">{stats.answered}</StatNumber>
           </StatItem>
           {stats.important > 0 && (
             <StatItem>
-              Important: <StatNumber color="danger">{stats.important}</StatNumber>
+              Important:{" "}
+              <StatNumber color="danger">{stats.important}</StatNumber>
             </StatItem>
           )}
         </Stats>
 
         <Controls>
           <RefreshButton onClick={handleRefresh} disabled={isLoading}>
-            {isLoading ? (
-              <LoadingSpinner size="small" />
-            ) : (
-              '🔄'
-            )}
+            {isLoading ? <LoadingSpinner size="small" /> : "🔄"}
             Refresh
           </RefreshButton>
-          
+
           <AutoRefreshIndicator>
             <div className="pulse" />
             Auto-updating
@@ -324,7 +332,7 @@ const QuestionList = () => {
       </Header>
 
       {error && questions.length > 0 && (
-        <ErrorState style={{ marginBottom: '1rem' }}>
+        <ErrorState style={{ marginBottom: "1rem" }}>
           <div>⚠️ {error}</div>
         </ErrorState>
       )}
@@ -335,7 +343,7 @@ const QuestionList = () => {
             <EmptyIcon>💭</EmptyIcon>
             <EmptyTitle>No questions yet</EmptyTitle>
             <EmptyDescription>
-              Questions posted in this session will appear here as sticky notes. 
+              Questions posted in this session will appear here as sticky notes.
               Be the first to ask a question!
             </EmptyDescription>
           </EmptyState>
@@ -347,7 +355,7 @@ const QuestionList = () => {
               if (!a.important && b.important) return 1;
               return new Date(b.createdAt) - new Date(a.createdAt);
             })
-            .map(question => (
+            .map((question) => (
               <StickyNote
                 key={question._id}
                 question={question}
@@ -359,12 +367,14 @@ const QuestionList = () => {
       </QuestionsGrid>
 
       {lastUpdate && (
-        <div style={{ 
-          marginTop: '1rem', 
-          fontSize: '0.75rem', 
-          color: '#666', 
-          textAlign: 'center' 
-        }}>
+        <div
+          style={{
+            marginTop: "1rem",
+            fontSize: "0.75rem",
+            color: "#666",
+            textAlign: "center",
+          }}
+        >
           Last updated: {lastUpdate.toLocaleTimeString()}
         </div>
       )}

@@ -15,6 +15,17 @@ import InstructorDashboard from "./pages/InstructorDashboard";
 import StudentInterface from "./pages/StudentInterface";
 import { USER_ROLES } from "./utils/constants";
 
+// Reset Component for easy app reset
+const ResetComponent = () => {
+  const { actions } = useApp();
+
+  React.useEffect(() => {
+    actions.resetApp();
+  }, [actions]);
+
+  return <Navigate to="/" replace />;
+};
+
 // Main App Content Component
 const AppContent = () => {
   const { state, actions } = useApp();
@@ -65,6 +76,9 @@ const AppContent = () => {
               )
             }
           />
+
+          {/* Reset route for development */}
+          <Route path="/reset" element={<ResetComponent />} />
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
