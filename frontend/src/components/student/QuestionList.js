@@ -214,7 +214,7 @@ const QuestionList = () => {
       const response = await questionService.getQuestionsBySession(
         currentSession.sessionId
       );
-      
+
       // Handle API response wrapper
       if (response.success) {
         setQuestions(Array.isArray(response.data) ? response.data : []);
@@ -257,10 +257,12 @@ const QuestionList = () => {
   const questionsArray = Array.isArray(questions) ? questions : [];
   const stats = {
     total: questionsArray.length,
-    unanswered: questionsArray.filter((q) => q.status === QUESTION_STATUS.UNANSWERED)
-      .length,
-    answered: questionsArray.filter((q) => q.status === QUESTION_STATUS.ANSWERED)
-      .length,
+    unanswered: questionsArray.filter(
+      (q) => q.status === QUESTION_STATUS.UNANSWERED
+    ).length,
+    answered: questionsArray.filter(
+      (q) => q.status === QUESTION_STATUS.ANSWERED
+    ).length,
     important: questionsArray.filter((q) => q.important).length,
   };
 
