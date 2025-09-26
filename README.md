@@ -5,6 +5,7 @@ A real-time classroom Q&A platform where students can post questions during lect
 ## Features
 
 ### For Instructors
+
 - Create and manage courses
 - Start live Q&A sessions with unique session IDs
 - View questions organized by students in a grid layout
@@ -13,6 +14,7 @@ A real-time classroom Q&A platform where students can post questions during lect
 - Persistent storage for post-lecture review
 
 ### For Students
+
 - Join sessions using session ID
 - Post multiple questions during lectures
 - View all questions from other students
@@ -20,12 +22,14 @@ A real-time classroom Q&A platform where students can post questions during lect
 - Clean, intuitive interface for seamless interaction
 
 ## Tech Stack
+
 - **Frontend**: React.js with responsive design
 - **Backend**: Node.js + Express.js
 - **Database**: MongoDB
 - **Real-time Communication**: Socket.io (planned)
 
 ## Project Structure
+
 ```
 VidyaVichara/
 ├── backend/          # Express.js server
@@ -37,18 +41,22 @@ VidyaVichara/
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - MongoDB
 - Git
 
 ### Installation
+
 Instructions will be added as development progresses.
 
 ## Development Progress
+
 - [ ] Backend API implementation
 - [ ] Frontend React components
 - [ ] Integration and testing
 - [ ] Real-time features
 
 ## Contributing
+
 This project is part of a classroom management system development.

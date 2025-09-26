@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * Generate a unique session ID
@@ -6,13 +6,13 @@ const { v4: uuidv4 } = require('uuid');
  * @returns {string} - Unique session ID
  */
 const generateSessionId = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'VV-';
-  
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "VV-";
+
   for (let i = 0; i < 6; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
-  
+
   return result;
 };
 
@@ -37,5 +37,5 @@ const isValidSessionId = (sessionId) => {
 module.exports = {
   generateSessionId,
   generateUUIDSessionId,
-  isValidSessionId
+  isValidSessionId,
 };
