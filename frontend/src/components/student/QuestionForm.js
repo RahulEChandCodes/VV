@@ -223,7 +223,7 @@ const QuestionForm = () => {
       const questionData = {
         sessionId: currentSession.sessionId,
         studentName: studentName,
-        text: questionText.trim(),
+        content: questionText.trim(),
       };
 
       await questionService.createQuestion(questionData);
