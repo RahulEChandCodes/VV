@@ -174,6 +174,7 @@ const StickyNote = ({
   size = "medium",
   isInstructor = false,
   onStatusChange,
+  onDelete,
   onClick,
   showActions = true,
 }) => {
@@ -188,6 +189,13 @@ const StickyNote = ({
     e.stopPropagation();
     if (onStatusChange) {
       onStatusChange(question._id, "toggle_important");
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm("Delete this question?")) {
+      onDelete?.(question._id);  // <-- call parent handler
     }
   };
 
@@ -236,6 +244,10 @@ const StickyNote = ({
           >
             {question.isImportant ? "⭐" : "⚡"}
           </ActionButton>
+          <ActionButton onClick={handleDelete} title="Delete question">
+            ❌
+          </ActionButton>
+
         </ActionButtons>
       )}
     </StickyNoteContainer>

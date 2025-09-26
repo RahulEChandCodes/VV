@@ -1,6 +1,6 @@
 // Application constants
 export const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 export const QUESTION_STATUS = {
   UNANSWERED: "unanswered",

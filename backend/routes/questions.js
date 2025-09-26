@@ -336,6 +336,7 @@ router.delete("/:id", async (req, res) => {
     res.json({
       success: true,
       message: "Question deleted successfully",
+      data: { id: req.params.id }
     });
   } catch (error) {
     console.error("Error deleting question:", error);
