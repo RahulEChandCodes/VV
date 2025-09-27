@@ -1,6 +1,30 @@
 import { get, post, put } from "./api";
 
 /**
+ * Fetch all questions for a session
+ * @param {string} sessionId - Session ID
+ * @param {object} params - Query params (status, student, page, limit)
+ * @returns {Promise} - API response with questions
+ */
+export const getSessionQuestions = (sessionId, params = {}) => {
+  const queryParams = new URLSearchParams(params).toString();
+  const url = `/sessions/${sessionId}/questions${queryParams ? `?${queryParams}` : ""}`;
+  return get(url);
+};
+
+/**
+ * Fetch questions grouped by student
+ * @param {string} sessionId - Session ID
+ * @param {object} params - Query params (status, etc.)
+ * @returns {Promise} - API response with grouped questions
+ */
+export const getSessionQuestionsByStudent = (sessionId, params = {}) => {
+  const queryParams = new URLSearchParams(params).toString();
+  const url = `/sessions/${sessionId}/questions/by-student${queryParams ? `?${queryParams}` : ""}`;
+  return get(url);
+};
+
+/**
  * Session service - handles all session-related API calls
  */
 
@@ -74,6 +98,8 @@ const sessionService = {
   endSession,
   getCourseSessions,
   getActiveCourseSession,
+  getSessionQuestions,
+  getSessionQuestionsByStudent,
 };
 
 export default sessionService;

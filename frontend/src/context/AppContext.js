@@ -218,44 +218,44 @@ export const AppProvider = ({ children }) => {
     // User actions
     setUserRole: (role) => {
       dispatch({ type: ActionTypes.SET_USER_ROLE, payload: role });
-      localStorage.setItem("userRole", role);
+      sessionStorage.setItem("userRole", role);
     },
 
     setCurrentSession: (session) => {
       dispatch({ type: ActionTypes.SET_CURRENT_SESSION, payload: session });
       if (session) {
-        localStorage.setItem("currentSession", JSON.stringify(session));
+        sessionStorage.setItem("currentSession", JSON.stringify(session));
       } else {
-        localStorage.removeItem("currentSession");
+        sessionStorage.removeItem("currentSession");
       }
     },
 
     setCurrentCourse: (course) => {
       dispatch({ type: ActionTypes.SET_CURRENT_COURSE, payload: course });
       if (course) {
-        localStorage.setItem("currentCourse", JSON.stringify(course));
+        sessionStorage.setItem("currentCourse", JSON.stringify(course));
       } else {
-        localStorage.removeItem("currentCourse");
+        sessionStorage.removeItem("currentCourse");
       }
     },
 
     clearSession: () => {
       dispatch({ type: ActionTypes.CLEAR_SESSION });
-      localStorage.removeItem("currentSession");
-      localStorage.removeItem("currentCourse");
-      localStorage.removeItem("studentName");
-      localStorage.removeItem("sessionJoined");
+      sessionStorage.removeItem("currentSession");
+      sessionStorage.removeItem("currentCourse");
+      sessionStorage.removeItem("studentName");
+      sessionStorage.removeItem("sessionJoined");
     },
 
     // Student actions
     setStudentName: (name) => {
       dispatch({ type: ActionTypes.SET_STUDENT_NAME, payload: name });
-      localStorage.setItem("studentName", name);
+      sessionStorage.setItem("studentName", name);
     },
 
     setSessionJoined: (joined) => {
       dispatch({ type: ActionTypes.SET_SESSION_JOINED, payload: joined });
-      localStorage.setItem("sessionJoined", joined.toString());
+      sessionStorage.setItem("sessionJoined", joined.toString());
     },
 
     // UI actions
@@ -322,12 +322,12 @@ export const AppProvider = ({ children }) => {
 
     // Reset app to initial state
     resetApp: () => {
-      // Clear localStorage
-      localStorage.removeItem("userRole");
-      localStorage.removeItem("currentSession");
-      localStorage.removeItem("currentCourse");
-      localStorage.removeItem("studentName");
-      localStorage.removeItem("sessionJoined");
+      // Clear sessionStorage
+      sessionStorage.removeItem("userRole");
+      sessionStorage.removeItem("currentSession");
+      sessionStorage.removeItem("currentCourse");
+      sessionStorage.removeItem("studentName");
+      sessionStorage.removeItem("sessionJoined");
 
       // Reset state to initial
       dispatch({ type: ActionTypes.SET_USER_ROLE, payload: null });
@@ -339,11 +339,11 @@ export const AppProvider = ({ children }) => {
   // Load persisted state on mount
   useEffect(() => {
     try {
-      const savedUserRole = localStorage.getItem("userRole");
-      const savedSession = localStorage.getItem("currentSession");
-      const savedCourse = localStorage.getItem("currentCourse");
-      const savedStudentName = localStorage.getItem("studentName");
-      const savedSessionJoined = localStorage.getItem("sessionJoined");
+      const savedUserRole = sessionStorage.getItem("userRole");
+      const savedSession = sessionStorage.getItem("currentSession");
+      const savedCourse = sessionStorage.getItem("currentCourse");
+      const savedStudentName = sessionStorage.getItem("studentName");
+      const savedSessionJoined = sessionStorage.getItem("sessionJoined");
 
       if (savedUserRole && Object.values(USER_ROLES).includes(savedUserRole)) {
         dispatch({ type: ActionTypes.SET_USER_ROLE, payload: savedUserRole });

@@ -137,6 +137,7 @@ const StudentGrid = ({
   questions = [],
   onQuestionStatusChange,
   onQuestionClick,
+  onQuestionDelete,
   statusFilter = "all",
   studentFilter = "",
 }) => {
@@ -276,6 +277,7 @@ const StudentGrid = ({
                       isInstructor={true}
                       onStatusChange={onQuestionStatusChange}
                       onClick={() => onQuestionClick?.(question)}
+                      onDelete={onQuestionDelete}
                     />
                   ))
               ) : (
@@ -291,7 +293,8 @@ const StudentGrid = ({
                       isInstructor={true}
                       onStatusChange={onQuestionStatusChange}
                       onClick={() => onQuestionClick?.(question)}
-                      showActions={false}
+                      onDelete={onQuestionDelete}
+                      // showActions={false}
                     />
                   ))
               )}
@@ -315,7 +318,7 @@ const StudentGrid = ({
         );
       })}
     </GridContainer>
-  );
+);
 };
 
 export default StudentGrid;

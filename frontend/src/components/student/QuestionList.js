@@ -217,7 +217,8 @@ const QuestionList = () => {
 
       // Handle API response wrapper
       if (response.success) {
-        setQuestions(Array.isArray(response.data) ? response.data : []);
+        // setQuestions(Array.isArray(response.data) ? response.data : []);
+        setQuestions(Array.isArray(response.data.questions) ? response.data.questions : []);
       } else {
         setError(response.message || "Failed to load questions");
         setQuestions([]);
@@ -255,16 +256,24 @@ const QuestionList = () => {
 
   // Calculate statistics (ensure questions is always an array)
   const questionsArray = Array.isArray(questions) ? questions : [];
+  // const stats = {
+  //   total: questionsArray.length,
+  //   unanswered: questionsArray.filter(
+  //     (q) => q.status === QUESTION_STATUS.UNANSWERED
+  //   ).length,
+  //   answered: questionsArray.filter(
+  //     (q) => q.status === QUESTION_STATUS.ANSWERED
+  //   ).length,
+  //   important: questionsArray.filter((q) => q.important).length,
+  // };
+
   const stats = {
     total: questionsArray.length,
-    unanswered: questionsArray.filter(
-      (q) => q.status === QUESTION_STATUS.UNANSWERED
-    ).length,
-    answered: questionsArray.filter(
-      (q) => q.status === QUESTION_STATUS.ANSWERED
-    ).length,
-    important: questionsArray.filter((q) => q.important).length,
+    unanswered: questionsArray.filter((q) => !q.isAnswered).length,
+    answered: questionsArray.filter((q) => q.isAnswered).length,
+    important: questionsArray.filter((q) => q.isImportant).length,
   };
+
 
   if (isLoading && questions.length === 0) {
     return (
@@ -364,7 +373,9 @@ const QuestionList = () => {
               // Sort by: important first, then by creation time (newest first)
               if (a.important && !b.important) return -1;
               if (!a.important && b.important) return 1;
-              return new Date(b.createdAt) - new Date(a.createdAt);
+              // return new Date(b.createdAt) - new Date(a.createdAt);
+              return new Date(b.timestamp) - new Date(a.timestamp);
+
             })
             .map((question) => (
               <StickyNote

@@ -116,15 +116,15 @@ api.interceptors.response.use(
  * @param {object} config - Additional axios config
  * @returns {Promise} - API response promise
  */
-export const apiCall = async (method, url, data = null, config = {}) => {
-  try {
-    const response = await api({
-      method,
-      url,
-      data,
-      ...config,
-    });
 
+export const apiCall = async (method, url, data, config = {}) => {
+  const options = { method, url, ...config };
+  if (data !== undefined) {
+    options.data = data;
+  }
+
+  try {
+    const response = await api(options);
     return {
       success: true,
       data: response.data.data || response.data,
@@ -142,6 +142,34 @@ export const apiCall = async (method, url, data = null, config = {}) => {
     };
   }
 };
+
+
+// export const apiCall = async (method, url, data = null, config = {}) => {
+//   try {
+//     const response = await api({
+//       method,
+//       url,
+//       data,
+//       ...config,
+//     });
+
+//     return {
+//       success: true,
+//       data: response.data.data || response.data,
+//       message: response.data.message,
+//       status: response.status,
+//     };
+//   } catch (error) {
+//     return {
+//       success: false,
+//       data: null,
+//       message: error.message,
+//       errors: error.errors || [],
+//       status: error.status,
+//       isNetworkError: error.isNetworkError,
+//     };
+//   }
+// };
 
 /**
  * GET request wrapper
@@ -177,7 +205,8 @@ export const put = (url, data, config = {}) =>
  * @param {object} config - Additional axios config
  * @returns {Promise} - API response promise
  */
-export const del = (url, config = {}) => apiCall("DELETE", url, null, config);
+// export const del = (url, config = {}) => apiCall("DELETE", url, null, config);
+export const del = (url, config = {}) => apiCall("DELETE", url, undefined, config);
 
 /**
  * Health check endpoint
